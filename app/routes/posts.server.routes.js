@@ -2,7 +2,7 @@ var users = require('../controller/users.server.controller'),
     posts = require('../controller/posts.server.controller');
 
 module.exports = function(app) {
-    app.route('/posts').get(users.CheckLogin, posts.ListPosts)
+    app.route('/posts').get(users.CheckLogin, posts.renderPost, posts.ListPosts)
         .post(users.CheckLogin, posts.CreatePost);
 
     app.route('/posts/:postId').get(posts.ReadPost)

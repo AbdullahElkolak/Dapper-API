@@ -3,6 +3,7 @@ var config = require('./config'),
     logger = require('morgan'),
     compress = require('compression'),
     bodyParser = require('body-parser'),
+    multer = require('multer'),
     methodOverride = require('method-override'),
     passport = require('passport'),
     flash = require('connect-flash'),
@@ -22,6 +23,8 @@ module.exports = function() {
     }));
     app.use(bodyParser.json());
     app.use(methodOverride());
+    app.use(multer({dest: './app/controller/store'}).single('photo'));
+
     app.use(session({
         resave: true,
         saveUninitialized: true,

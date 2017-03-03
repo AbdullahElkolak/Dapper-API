@@ -3,11 +3,18 @@ var passport = require('passport');
 
 var getErrorMessage = function(err) {
     var message = '';
-    if(err.code === 11000 || 11001) {
-        message = 'User already exists';
+    if (err.code) {
+        switch (err.code) {
+            case 11000:
+            case 11001:
+                message = 'Username already exists';
+                break;
+            default:
+                message = 'Something went wrong';
+        }
     } else {
-        for(var errName in err.errors) {
-            if(err.errors[errName].message)
+        for (var errName in err.errors) {
+            if (err.errors[errName].message)
                 message = err.errors[errName].message;
         }
     }
@@ -33,14 +40,20 @@ exports.CreateAccount = function(req, res, next) {
         var user = new User(req.body);
         user.provider = 'local';
 
+        var message = null;
+
         user.save(function (err) {
             if (err) {
-                req.flash('error', getErrorMessage(err));
+
+                var message = getErrorMessage(err);
+
+                req.flash('error', message);
+                //next(err);
                 return res.redirect('/signup');
             } else req.login(user, function(err) {
                 if(err)
                     return next(err);
-                return res.redirect('/');
+                return res.redirect('/posts');
             });
         });
     } else {

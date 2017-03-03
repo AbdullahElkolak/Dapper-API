@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title><%=title%></title>
+    <title>Respect</title>
 </head>
 
 <body>
-<form method="post" action="/articles">
-    <input type="text" name="title">
+<form method="post" action="/posts" enctype="multipart/form-data">
     <textarea name="content"></textarea>
+    <input type="file" name="file" id="file">
     <input type="submit" value="Post">
 </form>
 </body>
