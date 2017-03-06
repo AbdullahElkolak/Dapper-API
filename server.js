@@ -1,15 +1,16 @@
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-
-var mongoose = require('./config/mongoose');
-var express = require('./config/express');
-var passport = require('./config/passport');
+/**
+ * Created by kudza on 3/5/2017.
+ */
+var express = require('./configuration/express');
+var mongoose = require('./configuration/mongoose');
+var passport = require('./configuration/passport');
 
 var db = mongoose();
 var app = express();
 var passport = passport();
 
-var port = process.env.PORT || 3000;
+app.set('port', process.env.PORT || 3400);
 
-app.listen(port, function() {
-    console.log('Server listening at: ' + port);
+app.listen(app.get('port'), function() {
+    console.log('Server running on PORT: ' + app.get('port'));
 });

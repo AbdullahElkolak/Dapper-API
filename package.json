@@ -1,36 +1,29 @@
 {
   "name": "dapp3r",
   "version": "1.0.0",
-  "description": "Blog Application API",
+  "description": "Photo Sharing Application API",
   "main": "server.js",
   "scripts": {
-    "test": "test",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "keywords": [
-    "mean",
-    "blog",
-    "api"
-  ],
   "author": "Kudzai Gopfa",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Kudzai3/dapp3r.git"
-  },
   "dependencies": {
-    "body-parser": "^1.16.1",
-    "compression": "^1.6.2",
-    "connect-flash": "^0.1.1",
+    "body-parser": "^1.17.0",
+    "busboy": "^0.2.14",
     "crypto": "0.0.3",
     "ejs": "^2.5.6",
-    "express": "^4.14.1",
+    "express": "^4.15.0",
     "express-session": "^1.15.1",
+    "flash": "^1.1.0",
+    "fs": "0.0.1-security",
     "method-override": "^2.3.7",
-    "mongoose": "^4.8.3",
+    "mongoose": "^4.8.5",
     "morgan": "^1.8.1",
-    "multer": "^1.3.0",
+    "os": "^0.1.1",
     "passport": "^0.3.2",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7"
   }
 }
