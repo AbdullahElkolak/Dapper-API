@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Title</title>
+</head>
+
+<body>
+<%if( !username ) {%>
+<ul>
+    <li><a href="/signup">Signup</a></li>
+    <li><a href="/signin">Signin</a></li>
+</ul>
+<%} else {%>
+<a href="#"><p><%= username %></p></a>
+<form method="post" action="/posts">
+    <input type="text" name="title"><br/>
+    <textarea name="content"></textarea><br/>
+    <input type="submit" value="Post">
+</form>
+<%}%>
+</body>
+</html>
