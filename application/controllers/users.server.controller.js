@@ -32,17 +32,15 @@ exports.createAccount = function(req, res, next) {
             if (err) {
                 var message = getErrorMessage(err);
 
-                req.flash('error', message);
-                //next(err);
-                return res.redirect('/signup');
+                return res.send(message);
             } else req.login(user, function (err) {
                 if (err)
                     return next(err);
-                else return res.redirect('/images');
+                else return res.send(user);
             });
         });
     } else {
-        res.redirect('/images');
+        res.send("This user already exists");
     }
 };
 
@@ -50,7 +48,6 @@ exports.confirmLogin = function(req, res, next) {
     if(!req.isAuthenticated()) {
         return res.status(401).send('User not logged in');
     }
-
     next();
 };
 
@@ -79,6 +76,47 @@ exports.DeleteAccount = function(req, res) {
             req.logout();
             res.redirect('/');
         }
+    });
+};
+
+exports.CheckIfEmailInUse = function(req, res) {
+    var email = req.body.email;
+    User.findOne({
+        email: email.toLowerCase()
+    }, function(err, user) {
+        if (err) {
+            return 'An error occurred, Please Try Again';
+        } else if (user) {
+            // return true if a username is taken
+            return res.send({
+                message: "Email is already in use",
+                UserContinue: false
+            });
+        } else return res.send({
+            message: "Continue",
+            UserContinue: true
+        });
+    });
+};
+
+exports.CheckIfUsernameAvailable = function(req, res) {
+    var username = req.body.username;
+    User.findOne({
+        username: username.toLowerCase()
+    }, function(err, user) {
+        if (err) {
+            var message = getErrorMessage(err);
+            return res.send(message);
+        } else if (user) {
+            // return true if a username is taken
+            return res.send({
+                message: "Email is already in use",
+                UserContinue: false
+            });
+        } else return res.send({
+            message: "Continue",
+            UserContinue: true
+        });
     });
 };
 

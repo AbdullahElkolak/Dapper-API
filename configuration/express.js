@@ -24,15 +24,11 @@ module.exports = function() {
     }));
     app.use(flash());
 
-    app.set('views', './application/views');
-    app.set('view engine', 'ejs');
-
     app.use(passport.initialize());
     app.use(passport.session());
 
     require('./../application/routes/users.server.route.js')(app);
     require('./../application/routes/images.server.route.js')(app);
-    require('./../application/routes/index.server.routes.js')(app);
     require('./../application/routes/comments.server.routes.js')(app);
 
     return app;

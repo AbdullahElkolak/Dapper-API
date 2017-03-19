@@ -58,13 +58,25 @@ UserSchema.methods.hashPassword = function(password) {
     return crypto.pbkdf2Sync(password, this.salt, 10000,64).toString('base64');
 };
 
-UserSchema.statics.checkEmail = function(email, next) {
+UserSchema.statics.checkEmail = function(email) {
     this.findOne({
         email: email
     }, function(err, user) {
         if(err) {
             return 'An error occurred, Please Try Again';
         } else if(user) {
+            return false;
+        } else return true;
+    });
+};
+
+UserSchema.statics.checkUsername = function(username) {
+    this.findOne({
+        username: username
+    }, function(err, user) {
+        if (err) {
+            return 'An error occurred, Please Try Again';
+        } else if (user) {
             return false;
         } else return true;
     });
