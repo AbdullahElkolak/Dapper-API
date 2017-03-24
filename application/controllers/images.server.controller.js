@@ -42,9 +42,9 @@ exports.imageUpload = function(req, res) {
             imgID = createID(possible, possiblename) + ext;
         }
 
-        var saveTo = path.join('./application/temp/store/uploads', imgID);
+        var saveTo = path.join('./temp/store/uploads', imgID);
 
-        image.imageName = imgID;
+        image.imageName = saveTo;
         image.postedBy = req.user;
 
         console.log('Uploading: ' + saveTo);
@@ -97,7 +97,7 @@ exports.ReadPost = function(req, res) {
 };
 
 exports.ListImages = function(req, res) {
-    Images.find({}).sort('-written').populate('author', 'username').exec(function(err, images) {
+    Images.find({}).sort('-timestamp').populate('author', 'username').exec(function(err, images) {
         if(err) {
             return res.status(400).send({
                 message: getErrorMessage(err)

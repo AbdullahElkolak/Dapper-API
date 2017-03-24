@@ -16,6 +16,8 @@ module.exports = function() {
     }));
     app.use(bodyParser.json());
     app.use(methodOverride());
+	
+	app.set('view engine', 'ejs');
 
     app.use(session({
         resave: true,
