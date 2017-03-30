@@ -5,7 +5,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var ImageSchema = new Schema({
-    imageName: {
+    imageUrl: {
         type: String,
         required: true
     },

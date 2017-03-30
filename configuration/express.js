@@ -26,9 +26,12 @@ module.exports = function() {
     }));
     app.use(flash());
 
+    app.use('/uploads', express.static('uploads'));
+
     app.use(passport.initialize());
     app.use(passport.session());
 
+    require('./../application/routes/index.server.route.js')(app);
     require('./../application/routes/users.server.route.js')(app);
     require('./../application/routes/images.server.route.js')(app);
     require('./../application/routes/comments.server.routes.js')(app);

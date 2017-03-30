@@ -3,6 +3,8 @@ var fs = require('fs');
 var Busboy = require('busboy');
 var mongoose = require('mongoose');
 var Images = mongoose.model('Images');
+var Users = mongoose.model('Users');
+//var path = require('path');
 
 var getErrorMessage = function(err) {
     if(err.errors) {
@@ -42,14 +44,11 @@ exports.imageUpload = function(req, res) {
             imgID = createID(possible, possiblename) + ext;
         }
 
-        var saveTo = path.join('./temp/store/uploads', imgID);
+        var saveTo = path.join('./uploads', imgID);
 
-        image.imageName = saveTo;
+        image.imageUrl =  imgID;
         image.postedBy = req.user;
 
-        console.log('Uploading: ' + saveTo);
-
-        console.log('File type: ' + ext);
         file.pipe(fs.createWriteStream(saveTo));
     });
 
@@ -82,7 +81,7 @@ exports.ImageByID = function(req, res, id, next) {
                 message: getErrorMessage(err)
             })
         }
-        if(!article) {
+        if(!image) {
             return next(new Error('Failed to load article' + id));
         }
         else {
@@ -97,12 +96,14 @@ exports.ReadPost = function(req, res) {
 };
 
 exports.ListImages = function(req, res) {
-    Images.find({}).sort('-timestamp').populate('author', 'username').exec(function(err, images) {
+    Images.find({}).sort('-timestamp').populate('postedBy', 'username').exec(function(err, images) {
         if(err) {
             return res.status(400).send({
                 message: getErrorMessage(err)
             });
-        }  else return res.json(images);
+        }  else  {
+            return res.json(images);
+        }
     });
 };
 

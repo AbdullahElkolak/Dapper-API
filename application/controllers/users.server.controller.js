@@ -22,6 +22,69 @@ var getErrorMessage = function(err) {
     return message;
 };
 
+function createID(possible, name) {
+    for(var i = 0; i < 12; i++) {
+        name += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+
+    return name;
+}
+
+exports.avatarUpload = function(req, res) {
+	// use the user object to identify corresponding user via the user id
+    var user = req.user;
+
+    var busboy = new Busboy({ headers: req.headers });
+    var ext = '', possiblename = '';
+
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        ext = path.extname(filename).toLowerCase();
+
+        var possible = 'abcdefghijklmnopqrstuvwxyz0123456789',
+            imgID = createID(possible, possiblename) + ext;
+
+        while(Images.checkImageID(imgID)) {
+            imgID = createID(possible, possiblename) + ext;
+        }
+
+		// Store the avatars in the Profile folder within the uploads
+        var saveTo = path.join('./uploads/profile', imgID);
+
+		// Get the avatar name
+        user.Avatar = imgID;
+		
+		// Update user object with avatar name
+		user.save(function(err) {
+			if(err)
+				return res.send(
+				{
+					message: getErrorMessage(err),
+					continue: false
+				});
+			else return res.send(
+				{
+					message: 'Avatar successfully updated',
+					continue: true
+				});
+		});
+
+        file.pipe(fs.createWriteStream(saveTo));
+    });
+
+    busboy.on('finish', function() {
+        console.log('Avatar Upload complete');
+
+        user.save(function(err) {
+            if(err) {
+                return 'Error occurred in the Avatar upload controller';
+            } else return res.json(user);
+        });
+
+    });
+
+    return req.pipe(busboy);
+};
+
 exports.createAccount = function(req, res, next) {
     if(!req.user) {
         var user = new User(req.body);
@@ -34,9 +97,11 @@ exports.createAccount = function(req, res, next) {
 
                 return res.send(message);
             } else req.login(user, function (err) {
-                if (err)
+                if (err) {
                     return next(err);
-                else return res.send(user);
+                } else { 
+					return res.json(user);;
+				}
             });
         });
     } else {
@@ -110,7 +175,7 @@ exports.CheckIfUsernameAvailable = function(req, res) {
         } else if (user) {
             // return true if a username is taken
             return res.send({
-                message: "Email is already in use",
+                message: "Username is already in use",
                 UserContinue: false
             });
         } else return res.send({

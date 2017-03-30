@@ -17,6 +17,9 @@ var UserSchema = new Schema({
         lowercase: true,
         unique: true
     },
+    avatar: {
+        type: String
+    },
     email: {
         type: String,
         required: true,
@@ -81,5 +84,10 @@ UserSchema.statics.checkUsername = function(username) {
         } else return true;
     });
 };
+
+UserSchema.set('toJSON', {
+    getters: true,
+    virtuals: true
+});
 
 mongoose.model('Users', UserSchema);

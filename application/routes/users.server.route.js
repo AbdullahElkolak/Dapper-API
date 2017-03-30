@@ -7,10 +7,12 @@ module.exports = function(app) {
     app.post('/api/signup/authentication/email', users.CheckIfEmailInUse);
 
     app.post('/api/signup/authentication/username', users.CheckIfUsernameAvailable);
+	
+	app.post('/api/user/avatar', users.avatarUpload);
 
-    app.route('/signin').post( passport.authenticate('local', {
+    app.route('/api/signin').post( passport.authenticate('local', {
         successRedirect: '/',
-        failureRedirect: '/signin'
+        failureRedirect: '/api/signin'
     })).get(users.renderSignin);
 
     app.get('/signout', users.LogoutUser);
