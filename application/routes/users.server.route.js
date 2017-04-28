@@ -1,3 +1,8 @@
+/**
+ * User tasks routing file
+ * Created by Kudzai Gopfa on 3/5/2017.
+ */
+
 var users = require('../controllers/users.server.controller'),
     passport = require('passport');
 
@@ -7,13 +12,11 @@ module.exports = function(app) {
     app.post('/api/signup/authentication/email', users.CheckIfEmailInUse);
 
     app.post('/api/signup/authentication/username', users.CheckIfUsernameAvailable);
-	
-	app.post('/api/user/avatar', users.avatarUpload);
 
-    app.route('/api/signin').post( passport.authenticate('local', {
-        successRedirect: '/',
-        failureRedirect: '/api/signin'
-    })).get(users.renderSignin);
+	  app.route('/api/user/avatar').post(users.avatarUpload)
+      .get(users.renderAvatarUpload);
+
+    app.route('/api/signin').post().get(users.renderSignin);
 
     app.get('/signout', users.LogoutUser);
 };
