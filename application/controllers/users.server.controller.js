@@ -1,6 +1,19 @@
+/**
+ * User actions controller file
+ * Created by Kudzai Gopfa on 3/5/2017.
+ */
+
+var path = require('path');
+var fs = require('fs');
+var Busboy = require('busboy');
 var mongoose = require('mongoose');
 var User = mongoose.model('Users');
-var passport = require('passport');
+
+// authentication modules
+var passport = require('passport'),
+    config = require('../../configuration/env/development.js'),
+    jwt = require('jsonwebtoken');
+
 
 var getErrorMessage = function(err) {
     var message = '';
@@ -22,14 +35,16 @@ var getErrorMessage = function(err) {
     return message;
 };
 
+// Create ID for user avatar
 function createID(possible, name) {
     for(var i = 0; i < 12; i++) {
+        // Generate random ID
         name += possible.charAt(Math.floor(Math.random() * possible.length));
     }
-
     return name;
 }
 
+// Avatar upload function
 exports.avatarUpload = function(req, res) {
 	// use the user object to identify corresponding user via the user id
     var user = req.user;
@@ -43,16 +58,12 @@ exports.avatarUpload = function(req, res) {
         var possible = 'abcdefghijklmnopqrstuvwxyz0123456789',
             imgID = createID(possible, possiblename) + ext;
 
-        while(Images.checkImageID(imgID)) {
-            imgID = createID(possible, possiblename) + ext;
-        }
-
 		// Store the avatars in the Profile folder within the uploads
         var saveTo = path.join('./uploads/profile', imgID);
 
 		// Get the avatar name
-        user.Avatar = imgID;
-		
+        user.avatar = imgID;
+
 		// Update user object with avatar name
 		user.save(function(err) {
 			if(err)
@@ -73,54 +84,48 @@ exports.avatarUpload = function(req, res) {
 
     busboy.on('finish', function() {
         console.log('Avatar Upload complete');
-
-        user.save(function(err) {
-            if(err) {
-                return 'Error occurred in the Avatar upload controller';
-            } else return res.json(user);
-        });
-
     });
 
     return req.pipe(busboy);
 };
 
+// Create user account
 exports.createAccount = function(req, res, next) {
+    // Check if a user is logged (see passport documentation on req.user)
     if(!req.user) {
         var user = new User(req.body);
-
+        // Set the authentication method used
         user.provider = 'local';
 
+        // Save user object
         user.save(function (err) {
-            if (err) {
-                var message = getErrorMessage(err);
-
-                return res.send(message);
-            } else req.login(user, function (err) {
-                if (err) {
-                    return next(err);
-                } else { 
-					return res.json(user);;
-				}
-            });
+            if(err) {
+                return res.send({message: getErrorMessage(err)});
+            } else return res.json(user);
         });
     } else {
-        res.send("This user already exists");
+        res.send({message: "This user already exists"});
     }
 };
 
+// Check if a user is logged in
 exports.confirmLogin = function(req, res, next) {
-    if(!req.isAuthenticated()) {
+    if(!req.isAuthenticated()) {    // see passport documentation
         return res.status(401).send('User not logged in');
     }
     next();
 };
 
+// Render the signup page
 exports.renderSignup = function(req, res) {
     res.render('signup', {
         title: 'Create account',
         message: req.flash('error') || req.flash('info')
     });
+};
+
+exports.renderAvatarUpload = function(req, res) {
+    res.render('uploadAvatar');
 };
 
 exports.renderSignin = function(req, res) {
@@ -181,6 +186,40 @@ exports.CheckIfUsernameAvailable = function(req, res) {
         } else return res.send({
             message: "Continue",
             UserContinue: true
+        });
+    });
+};
+
+exports.UserLogin = function(req, res) {
+    // User key can either be email or username
+    if(req.body.userKEY && req.body.password) {
+        var userKEY = req.body.userKEY;
+        var password = req.body.password;
+    }
+
+    // Check whether user provides email or username
+    var criteria = (userKEY.indexOf('@') === -1) ? {username: userKEY} :
+    {email: userKEY};
+    User.findOne(criteria, function(err, user){
+        if (err) { // Check if an error occurs
+            return res.send({
+                message: getErrorMessage(err),
+                UserContinue: false
+            });
+        }
+        // Check if the user with the given key exists
+        else if (user.authenticate(password)) {
+            // Use the id of the user for account identification
+            var payload = {id: user.id};
+            var token = jwt.sign(payload, config.jwtOptions.secretOrKey);
+            return res.send({
+                message: "User token created",
+                UserContinue: true,
+                token: token
+            });
+        } else return res.status(401).send({
+            message: "Incorrect username/email and password combination!",
+            UserContinue: false
         });
     });
 };
