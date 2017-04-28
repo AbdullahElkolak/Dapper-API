@@ -16,7 +16,7 @@ module.exports = function(app) {
 	  app.route('/api/user/avatar').post(users.avatarUpload)
       .get(users.renderAvatarUpload);
 
-    app.route('/api/signin').post().get(users.renderSignin);
+    app.route('/api/signin').post(users.UserLogin).get(users.renderSignin);
 
     app.get('/signout', users.LogoutUser);
 };
