@@ -1,13 +1,12 @@
 /**
- * Created by kudza on 3/5/2017.
+ * Application main server file
+ * Created by Kudzai Gopfa on 3/5/2017.
  */
 var express = require('./configuration/express');
 var mongoose = require('./configuration/mongoose');
-var passport = require('./configuration/passport');
 
 var db = mongoose();
 var app = express();
-var passport = passport();
 
 app.set('port', process.env.PORT || 3400);
 
