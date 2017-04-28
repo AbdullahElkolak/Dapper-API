@@ -1,3 +1,8 @@
+/**
+ * User model instance file
+ * Created by Kudzai Gopfa on 3/5/2017.
+ */
+
 var mongoose = require('mongoose'),
     crypto = require('crypto'),
     Schema = mongoose.Schema;
@@ -45,44 +50,24 @@ var UserSchema = new Schema({
     }
 });
 
+// Before saving, generate salt and encrypt password
 UserSchema.pre('save', function(next) {
     if(this.password) {
+        // Generate salt for pbkdf
         this.salt = new Buffer(crypto.randomBytes(48).toString(), 'base64');
         this.password = this.hashPassword(this.password);
     }
     next();
 });
 
+// Check if a given password matches the password stored in the database
 UserSchema.methods.authenticate = function(password) {
     return this.password === this.hashPassword(password);
 };
 
+// Function to encrypt password
 UserSchema.methods.hashPassword = function(password) {
     return crypto.pbkdf2Sync(password, this.salt, 10000,64).toString('base64');
-};
-
-UserSchema.statics.checkEmail = function(email) {
-    this.findOne({
-        email: email
-    }, function(err, user) {
-        if(err) {
-            return 'An error occurred, Please Try Again';
-        } else if(user) {
-            return false;
-        } else return true;
-    });
-};
-
-UserSchema.statics.checkUsername = function(username) {
-    this.findOne({
-        username: username
-    }, function(err, user) {
-        if (err) {
-            return 'An error occurred, Please Try Again';
-        } else if (user) {
-            return false;
-        } else return true;
-    });
 };
 
 UserSchema.set('toJSON', {
