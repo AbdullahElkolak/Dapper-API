@@ -6,7 +6,7 @@
 var passport = require('passport'),
     JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt,
-    config = require('./env/development.js'),
+    config = require('../env/development.js'),
     User = require('mongoose').model('Users');
 
 module.exports = function() {
