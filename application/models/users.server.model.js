@@ -5,6 +5,8 @@
 
 var mongoose = require('mongoose'),
     crypto = require('crypto'),
+    jwt = require('jsonwebtoken'),
+    config = require('../../configuration/env/development.js');
     Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
@@ -68,6 +70,21 @@ UserSchema.methods.authenticate = function(password) {
 // Function to encrypt password
 UserSchema.methods.hashPassword = function(password) {
     return crypto.pbkdf2Sync(password, this.salt, 10000,64).toString('base64');
+};
+
+// Generate JSON web token for authenticating user request
+UserSchema.methods.generateJWT = function() {
+    var tokenExpiryDate = new Date();
+    // Expires one week after Login
+    tokenExpiryDate.setDate(tokenExpiryDate.getDate() + 7);
+
+    // return object id, email, username, avatar url and expiry data
+    return jwt.sign({
+        _id: this._id,
+        email: this.email,
+        username: this.username
+        exp: parseInt(expiry.getTime()/1000)
+    }, config.sessionSecret);
 };
 
 UserSchema.set('toJSON', {
