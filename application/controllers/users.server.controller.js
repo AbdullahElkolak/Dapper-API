@@ -109,6 +109,7 @@ exports.createAccount = function(req, res) {
                 });
             }//return res.redirect('/api/user/avatar');
         });
+    }
 };
 
 // Check if a user is logged in
