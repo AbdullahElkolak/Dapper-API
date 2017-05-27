@@ -109,9 +109,6 @@ exports.createAccount = function(req, res) {
                 });
             }//return res.redirect('/api/user/avatar');
         });
-    } else {
-        res.send({message: "This user already exists"});
-    }
 };
 
 // Check if a user is logged in
