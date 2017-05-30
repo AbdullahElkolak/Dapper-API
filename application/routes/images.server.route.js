@@ -1,9 +1,10 @@
 var image = require('./../controllers/images.server.controller.js');
 var users = require('./../controllers/users.server.controller.js');
+var passport = require('passport');
 
 module.exports = function(app) {
-    app.route('/images').get(image.ListImages)
-        .post(users.confirmLogin, image.imageUpload);
+    app.post('/images', passport.authenticate('jwt', {session: false}),image.ListImages)
+        //.post(users.confirmLogin, image.imageUpload);
 
     app.get('/images/upload', users.confirmLogin, image.renderUploadForm);
 

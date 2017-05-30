@@ -81,7 +81,6 @@ UserSchema.methods.generateJWT = function() {
     // return object id, email, username, avatar url and expiry data
     return jwt.sign({
         _id: this._id,
-        email: this.email,
         username: this.username,
         exp: parseInt(tokenExpiryDate.getTime()/1000)
     }, config.sessionSecret);
