@@ -1,12 +1,26 @@
 /**
- * Application main server file
- * Created by Kudzai Gopfa on 3/5/2017.
- */
-var express = require('./configuration/express');
-var mongoose = require('./configuration/mongoose');
+* Server configuration.
+* Created by Kudzai Gopfa on 3/5/2017.
+* MIT Licensed
+*/
 
-var db = mongoose();
-var app = express();
+'use strict'
+
+/**
+* Environment configuration
+*/
+
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
+/**
+* Module dependencies
+*/
+
+const express      =   require('./config/express');
+const mongoose     =   require('./config/mongoose');
+
+const db           =   mongoose();
+const app          =   express();
 
 app.set('port', process.env.PORT || 3400);
 
