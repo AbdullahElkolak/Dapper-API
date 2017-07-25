@@ -1,12 +1,11 @@
-var path = require('path');
-var fs = require('fs');
-var Busboy = require('busboy');
-var mongoose = require('mongoose');
-var Images = mongoose.model('Images');
-var Users = mongoose.model('Users');
-//var path = require('path');
+const path       =  require('path');
+const fs         =  require('fs');
+const Busboy     =  require('busboy');
+const mongoose   =  require('mongoose');
+const Images     =  mongoose.model('Images');
+const Users      =  mongoose.model('Users');
 
-var getErrorMessage = function(err) {
+let getErrorMessage = function(err) {
     if(err.errors) {
         var message = '';
         for (var i in err.errors) {
@@ -24,15 +23,14 @@ function createID(possible, name) {
     for(var i = 0; i < 12; i++) {
         name += possible.charAt(Math.floor(Math.random() * possible.length));
     }
-
     return name;
 }
 
-exports.imageUpload = function(req, res) {
-    var image = new Images();
+exports.upload = function(req, res) {
+    let image = new Images();
 
-    var busboy = new Busboy({ headers: req.headers });
-    var ext = '', possiblename = '';
+    let busboy = new Busboy({ headers: req.headers });
+    let ext = '', possiblename = '';
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         ext = path.extname(filename).toLowerCase();
@@ -44,7 +42,7 @@ exports.imageUpload = function(req, res) {
             imgID = createID(possible, possiblename) + ext;
         }
 
-        var saveTo = path.join('./uploads', imgID);
+        let saveTo = path.join('./uploads', imgID);
 
         image.imageUrl =  imgID;
         image.postedBy = req.user;
@@ -70,11 +68,7 @@ exports.imageUpload = function(req, res) {
     return req.pipe(busboy);
 };
 
-exports.renderUploadForm = function (req, res) {
-    res.render('ImageUpload');
-};
-
-exports.ImageByID = function(req, res, id, next) {
+exports.imageByID = function(req, res, id, next) {
     Images.findOne({_id: id}).populate('author', 'username').exec(function(err, image) {
         if(err) {
             return res.status(400).send({
@@ -91,11 +85,11 @@ exports.ImageByID = function(req, res, id, next) {
     });
 };
 
-exports.ReadPost = function(req, res) {
+exports.read = function(req, res) {
     res.json(req.image);
 };
 
-exports.ListImages = function(req, res) {
+exports.list = function(req, res) {
     Images.find({}).sort('-timestamp').populate('postedBy', 'username').exec(function(err, images) {
         if(err) {
             return res.status(400).send({
@@ -107,7 +101,7 @@ exports.ListImages = function(req, res) {
     });
 };
 
-exports.CheckUser = function(req, res, next) {
+exports.checkUser = function(req, res, next) {
     var image = req.image;
     if(!req.user.id === image.postedBy.id) {
         res.status(403).send({
@@ -116,7 +110,7 @@ exports.CheckUser = function(req, res, next) {
     } else next();
 };
 
-exports.UpdatePost = function(req, res) {
+exports.update = function(req, res) {
     var image = req.image;
 
     image.content = req.body.content;
@@ -130,8 +124,8 @@ exports.UpdatePost = function(req, res) {
     });
 };
 
-exports.DeletePost = function(req, res) {
-    var image = req.image;
+exports.delete = function(req, res) {
+    let image = req.image;
 
     image.remove(function(err) {
         if(err) {

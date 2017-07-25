@@ -1,31 +1,36 @@
 {
   "name": "dapp3r",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kudzai3/Dapp3r-API.git"
+  },
   "description": "Photo Sharing Application API",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
+  "keywords": [
+    "Social",
+    "Photos",
+    "Users"
+  ],
   "author": "Kudzai Gopfa",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.17.0",
+    "body-parser": "^1.17.2",
     "busboy": "^0.2.14",
     "crypto": "0.0.3",
-    "ejs": "^2.5.6",
-    "express": "^4.15.0",
-    "express-session": "^1.15.1",
-    "flash": "^1.1.0",
-    "fs": "0.0.1-security",
-    "jsonwebtoken": "^7.4.0",
-    "method-override": "^2.3.7",
-    "mongoose": "^4.8.5",
-    "morgan": "^1.8.1",
+    "express": "^4.15.3",
+    "fs": "0.0.2",
+    "fs-extra": "^4.0.0",
+    "jsonwebtoken": "^7.4.1",
+    "method-override": "^2.3.9",
+    "mongoose": "^4.11.3",
+    "morgan": "^1.8.2",
     "os": "^0.1.1",
     "passport": "^0.3.2",
-    "passport-jwt": "^2.2.1",
-    "passport-local": "^1.0.0",
-    "path": "^0.12.7"
+    "passport-jwt": "^2.2.1"
   }
 }
