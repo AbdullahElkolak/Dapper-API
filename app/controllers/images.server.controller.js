@@ -14,7 +14,6 @@ const path       =  require('path');
 const fs         =  require('fs');
 const fse        =  require('fs-extra');
 const Busboy     =  require('busboy');
-const mkdirp     =  require('mkdirp');
 const mongoose   =  require('mongoose');
 const Images     =  mongoose.model('Images');
 const Users      =  mongoose.model('Users');
