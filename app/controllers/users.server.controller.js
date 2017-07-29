@@ -102,7 +102,7 @@ exports.create = function(req, res) {
                 let token = generateJWT(user);
                 return res.send({
                     message: "Ok",
-                    token: token
+                    token: 'JWT ' + token
                 });
             }
         });
@@ -110,7 +110,7 @@ exports.create = function(req, res) {
 };
 
 exports.userByID = function(req, res, next, id) {
-    User.findOne({_id: id}, function(err, user) {
+    User.findOne({_id: id}, '-salt -password -__v -provider', function(err, user) {
         if(err) {
             return res.status(400).send({
                 message: getErrorMessage(err)
@@ -191,8 +191,8 @@ exports.username = function(req, res) {
 };
 
 exports.login = function(req, res) {
-    let userCRED = req.body.userCRED, password = req.body.password;
-
+    let userCRED = req.body.userCRED;
+    let password = req.body.password;
     // Check whether user provides email or username
     let criteria = (userCRED.indexOf('@') === -1) ? {username: userCRED.toLowerCase()} : {email: userCRED.toLowerCase()};
 
@@ -200,13 +200,16 @@ exports.login = function(req, res) {
         if (err) {
             return res.send({message: getErrorMessage(err)});
         }
+        else if(!user) {
+            return res.send({message: 'Username/Email not found!'});
+        }
         else if (user.authenticate(password)) {
             let token = generateJWT(user);
             return res.send({
                 success: true,
-                token: token
+                token: 'JWT ' + token
             });
-        } else return res.status(401).send({message: "Incorrect username/email and password combination!"});
+        } else return res.status(401).send({message: "Incorrect password! Please try again."});
     });
 };
 
