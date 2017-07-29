@@ -10,7 +10,7 @@
 * Module dependencies
 */
 
-const Like       =  require('mongoose').model('Like');
+const Image       =  require('mongoose').model('Images');
 
 let getErrorMessage = function(err) {
     if(err.errors) {
@@ -27,19 +27,18 @@ let getErrorMessage = function(err) {
 };
 
 exports.like = function(req, res) {
-    let like         =  {};
-    like.liked_by    =  req.user;
-    like.image       =  req.image;
+    let image        =  new Image(req.image);
+    image.liked_by   =  req.user;
 
-    like.save(function(err) {
+    image.save(function(err) {
         if(err) {
             return res.status(400).send(getErrorMessage(err));
-        } else res.json(comment);
+        } else res.json(image);
     });
 };
 
 exports.list = function(req, res) {
-    Like.find({image: req.image._id}).populate('liked_by', 'username').sort('-created').exec(function(err, likes) {
+    Image.find({_id: escape(req.image._id)}).populate('liked_by', 'username').sort('-created').exec(function(err, likes) {
         if(err) {
             return res.status(400).send({
                 message: getErrorMessage(err)
@@ -48,23 +47,15 @@ exports.list = function(req, res) {
     });
 };
 
-exports.checkUser = function(req, res, next) {
-    let comment = req.comment;
-    if(!req.user.id === comment.posted_by.id) {
-        res.status(403).send({
-            message: 'Action only available to author'
-        });
-    } else next();
-};
-
 exports.unlike = function(req, res) {
-    let comment = req.comment;
+    let image_id = req.image._id;
+    let liker_id = req.user._id;
 
-    comment.remove(function(err) {
-        if(err) {
-            return res.status(400).send({
+    like.findByIdAndUpdate(image_id, { $pullAll: {liked_by: [liker_id] }, {new: true}, function(err, image) {
+        if (err) {
+            return res.status(401).send({
                 message: getErrorMessage(err)
             });
-        } else res.json(comment);
+        } else res.json(image);
     });
 };
