@@ -11,7 +11,6 @@
 */
 
 const Like       =  require('mongoose').model('Like');
-const Image      =  require('mongoose').model('Images');
 
 let getErrorMessage = function(err) {
     if(err.errors) {
@@ -29,7 +28,7 @@ let getErrorMessage = function(err) {
 
 exports.like = function(req, res) {
     let like         =  {};
-    like.liked_by   =  req.user;
+    like.liked_by    =  req.user;
     like.image       =  req.image;
 
     like.save(function(err) {
