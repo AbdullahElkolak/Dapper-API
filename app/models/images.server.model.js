@@ -26,14 +26,14 @@ let ImageSchema = new Schema({
         type: Schema.ObjectId,
         ref: 'Users'
     },
-    comments: {
+    comments: [{
         type: Schema.ObjectId,
         ref: 'Comment'
-    },
-    liked_by: {
+    }],
+    liked_by: [{
         type: Schema.ObjectId,
         ref: 'Users'
-    },
+    }],
     created: {
         type: Date,
         default: Date.now
