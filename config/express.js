@@ -35,9 +35,9 @@ module.exports = function() {
 
     app.use(passport.initialize());
 
-    require('./../application/routes/users.server.route.js')(app);
-    require('./../application/routes/images.server.route.js')(app);
-    require('./../application/routes/comments.server.routes.js')(app);
+    require('./../app/routes/users.server.route.js')(app);
+    require('./../app/routes/images.server.route.js')(app);
+    require('./../app/routes/comments.server.routes.js')(app);
 
     app.post('/api/test', passport.authenticate('jwt', {session: false}), function(req, res) {res.send({message: req.body})});
 
