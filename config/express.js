@@ -39,8 +39,7 @@ module.exports = function() {
     require('./../app/routes/images.server.route.js')(app);
     require('./../app/routes/likes.server.routes.js')(app);
     require('./../app/routes/comments.server.routes.js')(app);
-
-    app.post('/api/test', passport.authenticate('jwt', {session: false}), function(req, res) {res.send({message: req.body})});
+    require('./../app/routes/follow.server.routes.js')(app);
 
     return app;
 };
