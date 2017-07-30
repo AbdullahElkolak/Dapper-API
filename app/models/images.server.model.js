@@ -27,8 +27,12 @@ let ImageSchema = new Schema({
         ref: 'Users'
     },
     comments: [{
-        type: Schema.ObjectId,
-        ref: 'Comment'
+        comment_id: Number,
+        comment: String,
+        comment_by: {
+            type: Schema.ObjectId,
+            ref: 'Users'
+        }
     }],
     liked_by: [{
         type: Schema.ObjectId,
