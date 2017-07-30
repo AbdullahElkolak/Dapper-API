@@ -10,20 +10,16 @@
 * Module dependencies
 */
 
-const users      =  require('./../controllers/users.server.controller');
 const comments   =  require('./../controllers/comments.server.controller');
 const images     =  require('./../controllers/images.server.controller.js');
 const passport   =  require('passport');
 
 module.exports = function(app) {
-    app.route('/api/images/:imageId/comments')
-        .get(passport.authenticate('jwt', {session: false}), comments.list)
+    app.route('/api/images/:imageId/comments/:commentID')
+        .get(comments.read)
+        .delete(passport.authenticate('jwt', {session: false}), comments.delete)
         .post(passport.authenticate('jwt', {session: false}), comments.create);
 
-    app.route('/api/images/:imageId/comments/:commentId')
-        .put(passport.authenticate('jwt', {session: false}), comments.update)
-        .delete(passport.authenticate('jwt', {session: false}), comments.delete);
-
-    app.param('commentId', comments.commentByID);
     app.param('imageId', images.imageByID);
+    app.param('commentID', comments.commentByID);
 };
