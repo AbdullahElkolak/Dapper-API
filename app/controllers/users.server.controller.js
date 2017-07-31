@@ -127,7 +127,7 @@ exports.userByID = function(req, res, next, id) {
 };
 
 exports.list = function(req, res) {
-    User.find({}).exec(function(err, users) {
+    User.find({}, '-salt -password -__v -provider').exec(function(err, users) {
         if(err) {
             return res.status(400).send({
                 message: getErrorMessage(err)
