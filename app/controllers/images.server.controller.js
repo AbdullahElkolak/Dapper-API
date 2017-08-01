@@ -16,7 +16,7 @@ const fse        =  require('fs-extra');
 const Busboy     =  require('busboy');
 const mongoose   =  require('mongoose');
 const Images     =  mongoose.model('Images');
-const Users      =  mongoose.model('Users');
+const Follow     =  mongoose.model('Follow');
 
 let getErrorMessage = function(err) {
     if(err.errors) {
@@ -56,7 +56,7 @@ exports.upload = function(req, res) {
             imgID = createID(possible, possiblename) + ext;
         }
 
-        let save_dir =  __dirname + '../../uploads/user_' + user._id;
+        let save_dir =  __dirname + '/../../uploads/user_' + user._id;
 
         fse.ensureDirSync(save_dir);
 
@@ -106,14 +106,20 @@ exports.read = function(req, res) {
 };
 
 exports.list = function(req, res) {
-    Images.find({}).sort('-timestamp').populate('postedBy', 'username').exec(function(err, images) {
-        if(err) {
-            return res.status(400).send({
-                message: getErrorMessage(err)
-            });
-        }  else  {
-            return res.json(images);
-        }
+    Follow.aggregate([
+        {
+          $lookup:
+            {
+              from: "Images",
+              localField: "following",
+              foreignField: "posted_by",
+              as: "images"
+            }
+       }
+    ]).exec(function(err, images) {
+        if(err)
+            return res.json(err);
+        else return res.json(images)
     });
 };
 
