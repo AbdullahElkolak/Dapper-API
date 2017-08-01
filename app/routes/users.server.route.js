@@ -11,6 +11,7 @@
 */
 
 const users          =   require('../controllers/users.server.controller');
+const follows        =   require('../controllers/follow.server.controller');
 const passport       =   require('passport');
 
 module.exports = function(app) {
@@ -25,7 +26,7 @@ module.exports = function(app) {
     app.post('/api/users/login', users.login);
 
     app.route('/api/users/:profileId')
-        .get(passport.authenticate('jwt', {session: false}), users.read)
+        .get(passport.authenticate('jwt', {session: false}), follows.populateFollowing, follows.populateFollowers, users.read)
         .post(passport.authenticate('jwt', {session: false}), users.upload)
         .put(passport.authenticate('jwt', {session: false}), users.update);
 
