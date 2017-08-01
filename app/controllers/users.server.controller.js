@@ -137,7 +137,11 @@ exports.list = function(req, res) {
 };
 
 exports.read = function(req, res) {
-    res.json(req.profile);
+    res.json({
+        profile: req.profile,
+        followers: req.followers.length,
+        following: req.following.length
+    });
 };
 
 exports.delete = function(req, res) {
