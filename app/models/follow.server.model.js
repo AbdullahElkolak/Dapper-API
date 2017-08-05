@@ -14,14 +14,8 @@ const mongoose   =  require('mongoose');
 const Schema     =  mongoose.Schema;
 
 let FollowSchema = new Schema({
-    follower: {
-        type: Schema.ObjectId,
-        ref: 'User'
-    },
-    following: {
-        type: Schema.ObjectId,
-        ref: 'User'
-    }
+    follower: String,
+    following: String
 });
 
 mongoose.model('Follow', FollowSchema);
