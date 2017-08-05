@@ -11,15 +11,35 @@
 */
 const Follow       =  require('mongoose').model('Follow');
 
+let getErrorMessage = function(err) {
+    var message = '';
+    if (err.code) {
+        switch (err.code) {
+            case 11000:
+            case 11001:
+                message = 'Following already';
+                break;
+            default:
+                message = 'Something went wrong';
+        }
+    } else {
+        for (var errName in err.errors) {
+            if (err.errors[errName].message)
+                message = err.errors[errName].message;
+        }
+    }
+    return message;
+};
+
 exports.populateFollowers = function(req, res, next) {
-    Follow.find({following: escape(req.profile._id)}, function(err, follows) {
+    Follow.find({$and: [{following: escape(req.profile._id)}, {follower: {$ne: escape(req.user._id)}}]}, function(err, follows) {
+        // $and: [{following: escape(req.profile._id)}, {follower: {$ne: escape(req.user._id)}}]
         if(err) {
             return res.status(400).send({
                 message: err
             });
         }
         else {
-            console.log(follows);
             req.followers = follows;
         }
         next();
@@ -27,14 +47,13 @@ exports.populateFollowers = function(req, res, next) {
 };
 
 exports.populateFollowing = function(req, res, next) {
-    Follow.find({follower: escape(req.profile._id)}, function(err, follows) {
+    Follow.find({$and: [{follower: escape(req.profile._id)}, {following: {$ne : escape(req.profile._id)}}]}, function(err, follows) {
         if(err) {
             return res.status(400).send({
                 message: err
             });
         }
         else {
-            console.log(follows);
             req.following = follows;
         }
         next();
@@ -50,7 +69,7 @@ exports.listFollowers = function(req, res) {
 }
 
 exports.follow = function(req, res) {
-    Follow.update({follower: req.user}, {following: req.profile}, { upsert: true }, function(err, follows) {
+    Follow.findOneAndUpdate({follower: escape(req.user._id), following: escape(req.profile._id)}, {follower: escape(req.user._id), following: escape(req.profile._id)}, {upsert: true, new: true}, function(err, follows) {
         if (err) {
             return res.json(err);
         } else return res.json(follows);
@@ -59,12 +78,12 @@ exports.follow = function(req, res) {
 
 exports.unfollow = function(req, res) {
     if(req.user && req.profile) {
-        Follow.remove({user: req.user}, {follow: req.profile},function(err) {
+        Follow.find({follow_id: escape(req.user._id) + escape(req.profile._id)}).remove().exec(function(err) {
             if(err) {
                 return res.status(400).send({
                     message: getErrorMessage(err)
                 });
-            }
+            } else return res.send({success: true})
         });
     }
 };
