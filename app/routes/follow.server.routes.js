@@ -19,9 +19,9 @@ module.exports = function(app) {
         .post(passport.authenticate('jwt', {session: false}), follows.follow)
         .delete(passport.authenticate('jwt', {session: false}), follows.unfollow);
 
-    app.get('/api/users/:profileId/followers', passport.authenticate('jwt', {session: false}), follows.listFollowers);
+    app.get('/api/users/:profileId/followers', passport.authenticate('jwt', {session: false}), follows.populateFollowers, follows.listFollowers);
 
-    app.get('/api/users/:profileId/followering', passport.authenticate('jwt', {session: false}), follows.listFollowing);
+    app.get('/api/users/:profileId/following', passport.authenticate('jwt', {session: false}), follows.populateFollowing, follows.listFollowing);
 
     app.param('profileId', users.userByID);
 };
