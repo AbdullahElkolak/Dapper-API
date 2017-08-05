@@ -62,7 +62,7 @@ exports.upload = function(req, res) {
 
         file.pipe(fs.createWriteStream(path.join(save_dir, imgID)));
         image.image_url =  imgID;
-        image.posted_by =  user;
+        image.posted_by =  user._id;
 
     });
 
@@ -107,25 +107,23 @@ exports.read = function(req, res) {
 
 exports.list = function(req, res) {
     Follow.aggregate([
-        {
-          $lookup:
-            {
-              from: "Images",
-              localField: "following",
-              foreignField: "posted_by",
-              as: "images"
-            }
-       }
-    ]).exec(function(err, images) {
+      {"$match": {follower: escape(req.user._id)}},
+      { "$lookup":{
+          from: 'images',
+          localField: 'following',
+          foreignField: 'posted_by',
+          as: 'content'
+      }}
+    ]).exec(function(err, content) {
         if(err)
-            return res.json(err);
-        else return res.json(images)
+          return res.json(err);
+        else return res.json(content);
     });
 };
 
 exports.checkUser = function(req, res, next) {
     let image = req.image;
-    if(!req.user.id === image.postedBy.id) {
+    if(!(escape(req.user._id) === escape(image.posted_by._id))) {
         res.status(403).send({
             message: 'Action only available to author'
         });
