@@ -15,6 +15,7 @@ const fs         =  require('fs');
 const Busboy     =  require('busboy');
 const mongoose   =  require('mongoose');
 const User       =  mongoose.model('Users');
+const Follow     =  mongoose.model('Follow');
 const config     =  require('../../config/env/development.js');
 const jwt        =  require('jsonwebtoken');
 
@@ -95,10 +96,14 @@ exports.create = function(req, res) {
         let user = new User(req.body);
         user.provider = 'local';
 
-        user.save(function (err) {
+        user.save(function (err, user) {
             if(err) {
                 return res.send({message: getErrorMessage(err)});
             } else {
+                let follow = new Follow({follower: user._id, following: user._id});
+
+                follow.save();
+
                 let token = generateJWT(user);
                 return res.send({
                     message: "Ok",
