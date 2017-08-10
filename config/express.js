@@ -34,6 +34,10 @@ module.exports = function() {
     app.use('/uploads', express.static('uploads'));
 
     app.use(passport.initialize());
+    
+    app.get('/', (req, res) => {
+        res.send({message: 'Server up and running'});
+    });
 
     require('./../app/routes/users.server.route.js')(app);
     require('./../app/routes/images.server.route.js')(app);
