@@ -74,10 +74,10 @@ exports.upload = function(req, res) {
         user.avatar = imgID;
 
     		user.save(function(err) {
-            if(err)
-                return res.send({message: getErrorMessage(err)});
-            else
-                return res.send({message: "Created"});
+            if(err) {
+                console.log(err);
+                return res.status(400).send({message: getErrorMessage(err)});
+            } else res.send({message: "Created"});
     		});
 
         file.pipe(fs.createWriteStream(saveTo));
@@ -98,11 +98,17 @@ exports.create = function(req, res) {
 
         user.save(function (err, user) {
             if(err) {
-                return res.send({message: getErrorMessage(err)});
+                console.log(err);
+                return res.status(400).send({message: getErrorMessage(err)});
             } else {
                 let follow = new Follow({follower: user._id, following: user._id});
 
-                follow.save();
+                follow.save(function(err) {
+                    if(err) {
+                        console.log(err);
+                        res.status(400).send({message: getErrorMessage(err)})
+                    }
+                });
 
                 let token = generateJWT(user);
                 return res.send({
@@ -117,6 +123,7 @@ exports.create = function(req, res) {
 exports.userByID = function(req, res, next, id) {
     User.findOne({_id: id}, '-salt -password -__v -provider', function(err, user) {
         if(err) {
+            console.log(err);
             return res.status(400).send({
                 message: getErrorMessage(err)
             })
@@ -134,6 +141,7 @@ exports.userByID = function(req, res, next, id) {
 exports.list = function(req, res) {
     User.find({}, '-salt -password -__v -provider').exec(function(err, users) {
         if(err) {
+            console.log(err);
             return res.status(400).send({
                 message: getErrorMessage(err)
             });
@@ -143,9 +151,9 @@ exports.list = function(req, res) {
 
 exports.read = function(req, res) {
     res.json({
-        profile: req.profile,
-        followers: req.followers.length,
-        following: req.following.length
+        profile   : req.profile,
+        followers : req.followers.length,
+        following : req.following.length
     });
 };
 
@@ -154,7 +162,8 @@ exports.delete = function(req, res) {
 
     User.remove(function(err) {
         if(err) {
-            return res.send({message: 'Oops! Something went wrong.'});
+            console.log(err);
+            return res.send({message: getErrorMessage(err)});
         } else {
             req.logout();
         }
@@ -168,6 +177,7 @@ exports.update = function(req, res) {
             _id: req.user._id
         }, userdata, {new: true}, function(err, user) {
             if(err) {
+                console.log(err);
                 return res.send({message: getErrorMessage(err)});
             } else {
                 return res.json(user);
@@ -180,6 +190,7 @@ exports.email = function(req, res) {
         email: req.body.email.toLowerCase()
     }, function(err, user) {
         if (err) {
+            console.log(err);
             return res.send({message: 'An error occurred, Please Try Again'});
         } else if (user) {
             return res.send({message: "Email is already in use"});
@@ -192,6 +203,7 @@ exports.username = function(req, res) {
         username: req.body.username.toLowerCase()
     }, function(err, user) {
         if (err) {
+            console.log(err);
             return res.send(getErrorMessage(err));
         } else if (user) {
             return res.send({message: "Username is already in use"});
@@ -207,6 +219,7 @@ exports.login = function(req, res) {
 
     User.findOne(criteria, function(err, user){
         if (err) {
+            console.log(err);
             return res.send({message: getErrorMessage(err)});
         }
         else if(!user) {
