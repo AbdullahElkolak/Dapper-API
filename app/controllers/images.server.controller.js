@@ -60,6 +60,7 @@ exports.upload = function(req, res) {
         Bucket: config.S3_BUCKET,
         Expires: 200,
         ACL: 'public-read'
+        ContentLength: 3000
     };
 
     let image    =  new Images();
