@@ -1,5 +1,8 @@
 
 module.exports = {
-    JWT_SECRET  : "%51LLY:5C13NCE;8R0/",
-    DB_URL      : 'mongodb://developer:1L0V3P1350MUCH@ds049084.mlab.com:49084/heroku_47xrxmjw/dapper_dev'
+    JWT_SECRET     : process.env.JWT_SECRET,
+    DB_URL         : process.env.DAPPER_DEV_MONGO_URI,
+    S3_BUCKET      : process.env.S3_BUCKET,
+    AWS_ACCESS_KEY : process.env.AWS_ACCESS_KEY,
+    AWS_SECRET_KEY : process.env.AWS_SECRET_KEY
 };
