@@ -59,7 +59,6 @@ exports.upload = function(req, res) {
     const s3Params = {
         Bucket: config.S3_BUCKET,
         Expires: 60,
-        ContentType: fileType,
         ACL: 'public-read'
     };
 
@@ -71,9 +70,10 @@ exports.upload = function(req, res) {
 
         let imgID  = 'uploads/content/user_' + req.user._id + '/' + createID() + ext;
 
-        s3Params.Key      =  imgID;
-        image.image_url   =  imgID;
-        image.posted_by   =  req.user._id;
+        s3Params.Key          =  imgID;
+        s3Params.ContentType  =  mimetype;
+        image.image_url       =  imgID;
+        image.posted_by       =  req.user._id;
 
         file.pipe(
             s3.getSignedUrl('putObject', s3Params, (err, data) => {
