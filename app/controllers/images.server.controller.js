@@ -29,7 +29,7 @@ const Follow     =  mongoose.model('Follow');
 */
 
 const S3_BUCKET    = process.env.S3_BUCKET;
-aws.config.region  = 'ap-southeast-1';
+aws.config         = config.AWS;
 
 let getErrorMessage = function(err) {
     if(err.errors) {
@@ -47,7 +47,7 @@ let getErrorMessage = function(err) {
 
 function createID() {
     let possible = 'abcdefghijklmnopqrstuvwyz', name = '';
-    for(var i = 0; i < 12; i++) {
+    for(var i = 0; i < 8; i++) {
         name += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return name;
@@ -70,25 +70,28 @@ exports.upload = function(req, res) {
 
         let imgID  = 'uploads/content/user_' + req.user._id + '/' + createID() + ext;
 
+        console.log("Image name: " + imgID);
+
         s3Params.Key          =  imgID;
         s3Params.ContentType  =  mimetype;
+        s3Params.Body         =  file;
+
         image.image_url       =  imgID;
         image.posted_by       =  req.user._id;
 
-        file.pipe(
-            s3.getSignedUrl('putObject', s3Params, (err, data) => {
-                if(err){
-                    console.log(err);
-                    return res.send({message: 'Oops! Something went wrong, Try Again.'});
-                }
+        console.log("S3 Parameters: " + JSON.stringify(s3Params));
 
-                const returnData = {
-                    signedRequest: data,
-                    url: `https://${config.S3_BUCKET}.s3.amazonaws.com/${imgID}`
-                };
-            })
-        );
+        s3.getSignedUrl('putObject', s3Params, (err, data) => {
+            if(err){
+                console.log(err);
+                return res.send({message: 'Oops! Something went wrong, Try Again.'});
+            }
 
+            const returnData = {
+                signedRequest: data,
+                url: `https://${config.S3_BUCKET}.s3.amazonaws.com/${imgID}`
+            };
+        });
     });
 
     busboy.on('field', function(fieldname, description) {
