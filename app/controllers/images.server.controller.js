@@ -12,11 +12,18 @@
 
 const path       =  require('path');
 const fs         =  require('fs');
-const fse        =  require('fs-extra');
 const Busboy     =  require('busboy');
 const mongoose   =  require('mongoose');
+const aws        =  require('aws-sdk');
 const Images     =  mongoose.model('Images');
 const Follow     =  mongoose.model('Follow');
+
+/**
+* Environment variables
+*/
+
+const S3_BUCKET    = process.env.S3_BUCKET;
+aws.config.region  = 'ap-southeast-1';
 
 let getErrorMessage = function(err) {
     if(err.errors) {
@@ -32,7 +39,8 @@ let getErrorMessage = function(err) {
     }
 };
 
-function createID(possible, name) {
+function createID() {
+    let possible = 'abcdefghijklmnopqrstuvwyz', name = '';
     for(var i = 0; i < 12; i++) {
         name += possible.charAt(Math.floor(Math.random() * possible.length));
     }
@@ -40,29 +48,40 @@ function createID(possible, name) {
 }
 
 exports.upload = function(req, res) {
-    let image = new Images(),
-        user  = req.user;
+    const s3       = new aws.S3();
 
-    let busboy = new Busboy({ headers: req.headers });
-    let ext = '', possiblename = '';
+    const s3Params = {
+        Bucket: S3_BUCKET,
+        Expires: 60,
+        ContentType: fileType,
+        ACL: 'public-read'
+    };
+
+    let image    =  new Images();
+    let busboy   =  new Busboy({ headers: req.headers });
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        ext = path.extname(filename).toLowerCase();
+        let ext    =  path.extname(filename).toLowerCase();
 
-        var possible = 'abcdefghijklmnopqrstuvwxyz0123456789',
-            imgID = createID(possible, possiblename) + ext;
+        let imgID  = 'uploads/content/user_' + req.user._id + '/' + createID() + ext;
 
-        while(Images.checkImageID(imgID)) {
-            imgID = createID(possible, possiblename) + ext;
-        }
+        s3Params.Key      =  imgID;
+        image.image_url   =  imgID;
+        image.posted_by   =  req.user._id;
 
-        let save_dir =  __dirname + '/../../uploads/user_' + user._id;
+        file.pipe(
+            s3.getSignedUrl('putObject', s3Params, (err, data) => {
+                if(err){
+                    console.log(err);
+                    return res.send({message: 'Oops! Something went wrong, Try Again.'});
+                }
 
-        fse.ensureDirSync(save_dir);
-
-        file.pipe(fs.createWriteStream(path.join(save_dir, imgID)));
-        image.image_url =  imgID;
-        image.posted_by =  user._id;
+                const returnData = {
+                    signedRequest: data,
+                    url: `https://${config.S3_BUCKET}.s3.amazonaws.com/${imgID}`
+                };
+            })
+        );
 
     });
 
@@ -71,14 +90,12 @@ exports.upload = function(req, res) {
     });
 
     busboy.on('finish', function() {
-        console.log('Upload complete');
-
         image.save(function(err) {
             if(err) {
-                return res.send({message: err/*'Error occurred while uploading file'*/});
+                console.log(err);
+                return res.send({message: getErrorMessage(err)});
             } else res.json(image);
         });
-
     });
 
     return req.pipe(busboy);
@@ -87,6 +104,7 @@ exports.upload = function(req, res) {
 exports.imageByID = function(req, res, next, id) {
     Images.findOne({_id: id}).populate('author', 'username').exec(function(err, image) {
         if(err) {
+            console.log(err);
             return res.status(400).send({
                 message: getErrorMessage(err)
             })
@@ -115,9 +133,10 @@ exports.list = function(req, res) {
           as: 'content'
       }}
     ]).exec(function(err, content) {
-        if(err)
-          return res.json(err);
-        else return res.json(content);
+        if(err) {
+            console.log(err);
+            return res.status(400).send({message: getErrorMessage(err)});
+        } else res.json(content);
     });
 };
 
@@ -137,6 +156,7 @@ exports.update = function(req, res) {
 
         image.save(function(err) {
             if(err) {
+                console.log(err);
                 return res.status(400).send({
                     message: getErrorMessage(err)
                 });
@@ -158,6 +178,7 @@ exports.delete = function(req, res) {
 
     image.remove(function(err) {
         if(err) {
+            console.log(err);
             return res.status(400).send({
                 message: getErrorMessage(err)
             });
