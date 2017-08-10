@@ -1,10 +1,7 @@
 {
   "name": "dapp3r",
-  "version": "2.2.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Kudzai3/Dapp3r-API.git"
-  },
+  "version": "2.0.0",
+  "repository": {},
   "description": "Photo Sharing Application API",
   "main": "server.js",
   "scripts": {
