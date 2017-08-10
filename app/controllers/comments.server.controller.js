@@ -36,8 +36,9 @@ exports.create = function(req, res) {
 
     image.save(function(err, image_u) {
         if (err) {
-            return res.status(401).send({
-                message: err/*getErrorMessage(err)*/
+            console.log(err);
+            return res.status(400).send({
+                message: getErrorMessage(err)
             });
         } else return res.json(image_u);
     });
@@ -46,7 +47,7 @@ exports.create = function(req, res) {
 exports.commentByID = function(req, res, next, id) {
     let image = req.image;
     image.comments.forEach(function(comment) {
-        if(escape(comment._id) == id) {
+        if(escape(comment._id) === id) {
             req.comment = comment;
             return next();
         }
@@ -70,8 +71,9 @@ exports.delete = function(req, res) {
     let image        =  req.image;
 
     image.update({ $pullAll: {'comments': [req.comment] } }, {new: true}, function(err, image_u) {
-        if(err)
-            return res.json(err);
-        else return res.json(image_u);
+        if(err) {
+            console.log(err);
+            return res.send({message: getErrorMessage(err)});
+        } else return res.json(image_u);
     });
 };
