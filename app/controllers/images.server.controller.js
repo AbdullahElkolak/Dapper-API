@@ -15,6 +15,12 @@ const fs         =  require('fs');
 const Busboy     =  require('busboy');
 const mongoose   =  require('mongoose');
 const aws        =  require('aws-sdk');
+const config     =  require('../../config/env/development.js');
+
+/**
+* Models
+*/
+
 const Images     =  mongoose.model('Images');
 const Follow     =  mongoose.model('Follow');
 
@@ -35,7 +41,7 @@ let getErrorMessage = function(err) {
         }
         return message;
     } else {
-        return "Unknown server error";
+        return "Oops! Something went wrong, please try again later.";
     }
 };
 
@@ -51,7 +57,7 @@ exports.upload = function(req, res) {
     const s3       = new aws.S3();
 
     const s3Params = {
-        Bucket: S3_BUCKET,
+        Bucket: config.S3_BUCKET,
         Expires: 60,
         ContentType: fileType,
         ACL: 'public-read'
@@ -125,7 +131,7 @@ exports.read = function(req, res) {
 
 exports.list = function(req, res) {
     Follow.aggregate([
-      {"$match": {follower: escape(req.user._id)}},
+      { "$match": {follower: escape(req.user._id)}},
       { "$lookup":{
           from: 'images',
           localField: 'following',

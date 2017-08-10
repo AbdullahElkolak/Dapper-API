@@ -17,10 +17,10 @@ let getErrorMessage = function(err) {
         switch (err.code) {
             case 11000:
             case 11001:
-                message = 'Following already';
+                message = 'You are already following this user.';
                 break;
             default:
-                message = 'Something went wrong';
+                message = 'Oops! Something went wrong, please try again later.';
         }
     } else {
         for (var errName in err.errors) {

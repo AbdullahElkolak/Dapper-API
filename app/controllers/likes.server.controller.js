@@ -22,7 +22,7 @@ let getErrorMessage = function(err) {
         }
         return message;
     } else {
-        return 'Unknown server error';
+        return 'Oops! Something went wrong, please try again later.';
     }
 };
 

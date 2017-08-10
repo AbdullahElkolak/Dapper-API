@@ -14,10 +14,15 @@ const path       =  require('path');
 const fs         =  require('fs');
 const Busboy     =  require('busboy');
 const mongoose   =  require('mongoose');
-const User       =  mongoose.model('Users');
-const Follow     =  mongoose.model('Follow');
 const config     =  require('../../config/env/development.js');
 const jwt        =  require('jsonwebtoken');
+
+/**
+* Models
+*/
+
+const User       =  mongoose.model('Users');
+const Follow     =  mongoose.model('Follow');
 
 let getErrorMessage = function(err) {
     var message = '';
@@ -28,7 +33,7 @@ let getErrorMessage = function(err) {
                 message = 'Username already exists';
                 break;
             default:
-                message = 'Something went wrong';
+                message = 'Oops! Something went wrong, please try again later.';
         }
     } else {
         for (var errName in err.errors) {
