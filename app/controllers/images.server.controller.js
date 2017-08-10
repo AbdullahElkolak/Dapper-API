@@ -69,8 +69,8 @@ exports.upload = function(req, res) {
         let ext    =  path.extname(filename).toLowerCase();
 
         let imgID  = 'uploads/content/user_' + req.user._id + '/' + createID() + ext;
-
-        console.log("Image name: " + imgID);
+        
+        let options = {partSize: 10 * 1024 * 1024, queueSize: 1};
 
         s3Params.Key          =  imgID;
         s3Params.ContentType  =  mimetype;
@@ -81,7 +81,7 @@ exports.upload = function(req, res) {
 
         console.log("S3 Parameters: " + JSON.stringify(s3Params));
 
-        s3.getSignedUrl('putObject', s3Params, (err, data) => {
+        s3.upload(s3Params, options, (err, data) => {
             if(err){
                 console.log(err);
                 return res.send({message: 'Oops! Something went wrong, Try Again.'});
