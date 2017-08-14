@@ -32,30 +32,36 @@ let getErrorMessage = function(err) {
 };
 
 exports.create = function(req, res) {
-    let image        =  req.image;
+    let comment = new Comment();
 
-    image.comments.push({
-                            comment: req.body.comment,
-                            comment_by: req.user
-                        });
+    comment.image = req.image;
+    comment.posted_by = req.user;
 
-    image.save(function(err, image_u) {
+    comment.save(function(err, comment) {
         if (err) {
             console.log(err);
             return res.status(400).send({
                 message: getErrorMessage(err)
             });
-        } else return res.json(image_u);
+        } else return res.json(comment);
     });
 };
 
 exports.commentByID = function(req, res, next, id) {
-    let image = req.image;
-    image.comments.forEach(function(comment) {
-        if(escape(comment._id) === id) {
-            req.comment = comment;
-            return next();
+    Comments.findOne({_id: id}).populate('author', 'username').exec(function(err, comment) {
+        if(err) {
+            console.log(err);
+            return res.status(400).send({
+                message: getErrorMessage(err)
+            })
         }
+        if(!comment) {
+            return next(new Error('Failed to load article' + id));
+        }
+        else {
+            req.comment = comment;
+        }
+        next();
     });
 };
 
@@ -73,12 +79,14 @@ exports.checkUser = function(req, res, next) {
 };
 
 exports.delete = function(req, res) {
-    let image        =  req.image;
+    let comment = req.comment;
 
-    image.update({ $pullAll: {'comments': [req.comment] } }, {new: true}, function(err, image_u) {
+    comment.remove(function(err) {
         if(err) {
             console.log(err);
-            return res.send({message: getErrorMessage(err)});
-        } else return res.json(image_u);
+            return res.status(400).send({
+                message: getErrorMessage(err)
+            });
+        }
     });
 };
