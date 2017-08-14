@@ -22,15 +22,10 @@ let ImageSchema = new Schema({
         trim: true
     },
     location: String,
-    posted_by: String,
-    comments: [{
-        comment_id: Number,
-        comment: String,
-        comment_by: {
-            type: Schema.ObjectId,
-            ref: 'Users'
-        }
-    }],
+    posted_by: {
+        type: Schema.ObjectId,
+        ref: 'Users'
+    },
     liked_by: [{
         type: Schema.ObjectId,
         ref: 'Users'
