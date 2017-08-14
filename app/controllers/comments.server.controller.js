@@ -15,7 +15,7 @@ const config     =  require('../../config/env/development.js');
 * Models
 */
 
-const Image      =  require('mongoose').model('Images');
+const Comment    =  require('mongoose').model('Comment');
 
 let getErrorMessage = function(err) {
     if(err.errors) {
@@ -27,15 +27,15 @@ let getErrorMessage = function(err) {
         }
         return message;
     } else {
-        return 'Oops! Something went wrong, please try again later.';
+        return 'Oops! Something went wrong, please try again.';
     }
 };
 
 exports.create = function(req, res) {
     let comment = new Comment();
 
-    comment.image = req.image;
-    comment.posted_by = req.user;
+    comment.image      = req.image;
+    comment.posted_by  = req.user;
 
     comment.save(function(err, comment) {
         if (err) {
@@ -48,7 +48,7 @@ exports.create = function(req, res) {
 };
 
 exports.commentByID = function(req, res, next, id) {
-    Comments.findOne({_id: id}).populate('author', 'username').exec(function(err, comment) {
+    Comment.findOne({_id: id}).populate('comment_by', 'username').exec(function(err, comment) {
         if(err) {
             console.log(err);
             return res.status(400).send({
@@ -70,8 +70,8 @@ exports.read = function(req, res) {
 };
 
 exports.checkUser = function(req, res, next) {
-    let image = req.image;
-    if(!(escape(req.user.id) === escape(image.comments.comment_by._id))) {
+    let comment = req.comment;
+    if(!(escape(req.user.id) === escape(comment.comment_by._id))) {
         res.status(403).send({
             message: 'Action only available to author'
         });
