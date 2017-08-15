@@ -18,6 +18,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const express      =   require('./config/express');
 const mongoose     =   require('./config/mongoose');
+const fs      = require('fs');
 
 const db           =   mongoose();
 const app          =   express();
