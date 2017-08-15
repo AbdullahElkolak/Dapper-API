@@ -24,6 +24,11 @@ const app          =   express();
 
 app.set('port', process.env.PORT || 3400);
 
-app.listen(app.get('port'), function() {
-    console.log('Server running on PORT: ' + app.get('port'));
+app.listen('/tmp/nginx.socket', function() {
+    if (process.env.DYNO) {
+        console.log('This is on Heroku..!!');
+        fs.openSync('/tmp/app-initialized', 'w');
+    }
+
+    console.log('Server running on PORT: ' + app.get('port') + ' at ' + Date(new Date()));
 });
