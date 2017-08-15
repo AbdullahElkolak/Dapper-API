@@ -1,1 +1,1 @@
-web: bin/start-nginx node server.js
+web: scripts/build_nginx.sh
