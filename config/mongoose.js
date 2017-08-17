@@ -18,6 +18,7 @@ module.exports = function() {
 
     require('./../app/models/users.server.model.js');
     require('./../app/models/images.server.model.js');
+    require('./../app/models/comments.server.model.js');
     require('./../app/models/follow.server.model.js');
 
     return db;
