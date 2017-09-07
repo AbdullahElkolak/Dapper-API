@@ -63,33 +63,57 @@ function generateJWT(user) {
 }
 
 exports.upload = function(req, res) {
-    let user = req.user;
+    const s3       = new aws.S3();
 
-    let busboy = new Busboy({ headers: req.headers });
-    let ext = '', possiblename = '';
+    const s3Params = {
+        Bucket: config.S3_BUCKET,
+        Expires: 200,
+        ACL: 'public-read'
+    };
+
+    let image    =  new Images();
+    let busboy   =  new Busboy({ headers: req.headers });
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        ext = path.extname(filename).toLowerCase();
+        let ext    =  path.extname(filename).toLowerCase();
 
-        let possible = 'abcdefghijklmnopqrstuvwxyz0123456789',
-            imgID = createID(possible, possiblename) + ext;
+        let imgID  = 'uploads/avatar/user_' + req.user._id + '/' + createID() + ext;
 
-        let saveTo = path.join('./uploads/profile', imgID);
+        let options = {partSize: 10 * 1024 * 1024, queueSize: 1};
 
-        user.avatar = imgID;
+        s3Params.Key          =  imgID;
+        s3Params.ContentType  =  mimetype;
+        s3Params.Body         =  file;
 
-    		user.save(function(err) {
-            if(err) {
+        image.image_url       =  imgID;
+        image.posted_by       =  req.user._id;
+
+        console.log("S3 Parameters: " + JSON.stringify(s3Params));
+
+        s3.upload(s3Params, options, (err, data) => {
+            if(err){
                 console.log(err);
-                return res.status(400).send({message: getErrorMessage(err)});
-            } else res.send({message: "Created"});
-    		});
+                return res.send({message: 'Oops! Something went wrong, Try Again.'});
+            }
 
-        file.pipe(fs.createWriteStream(saveTo));
+            const returnData = {
+                signedRequest: data,
+                url: `https://${config.S3_BUCKET}.s3.amazonaws.com/${imgID}`
+            };
+        });
+    });
+
+    busboy.on('field', function(fieldname, description) {
+        image.description = description;
     });
 
     busboy.on('finish', function() {
-        console.log('Avatar Upload complete');
+        image.save(function(err) {
+            if(err) {
+                console.log(err);
+                return res.send({message: getErrorMessage(err)});
+            } else res.json(image);
+        });
     });
 
     return req.pipe(busboy);
