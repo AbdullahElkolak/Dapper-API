@@ -220,10 +220,19 @@ exports.email = function(req, res) {
     }, function(err, user) {
         if (err) {
             console.log(err);
-            return res.send({message: 'An error occurred, Please Try Again'});
+            return res.send({
+				message: getErrorMessage(err),
+				userContinue: false
+			});
         } else if (user) {
-            return res.send({message: "Email is already in use"});
-        } else return res.send({message: "Continue"});
+            return res.send({
+				message: "Email is already in use",
+				userContinue: false
+			});
+        } else return res.send({
+			message: "Continue",
+			userContinue: false
+		});
     });
 };
 
@@ -233,10 +242,19 @@ exports.username = function(req, res) {
     }, function(err, user) {
         if (err) {
             console.log(err);
-            return res.send(getErrorMessage(err));
+            return res.send({
+				message: getErrorMessage(err),
+				userContinue: false
+			});
         } else if (user) {
-            return res.send({message: "Username is already in use"});
-        } else return res.send({message: "Ok"});
+            return res.send({
+				message: "Username is already in use",
+				userContinue: false
+			});
+        } else return res.send({
+			message: "Ok",
+			userContinue: true
+		});
     });
 };
 
