@@ -230,8 +230,8 @@ exports.email = function(req, res) {
 				userContinue: false
 			});
         } else return res.send({
-			message: "Continue",
-			userContinue: false
+			message: "Ok",
+			userContinue: true
 		});
     });
 };
