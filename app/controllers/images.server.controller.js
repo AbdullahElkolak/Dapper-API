@@ -63,7 +63,7 @@ exports.upload = function(req, res) {
         file.pipe(fs.createWriteStream(path.join(save_dir, imgID)));
         image.image_url =  imgID;
         image.posted_by =  user._id;
-
+        image.user      =  user;
     });
 
     busboy.on('field', function(fieldname, description) {
