@@ -31,6 +31,10 @@ let ImageSchema = new Schema({
             ref: 'Users'
         }
     }],
+    user: {
+        type: Schema.ObjectId,
+        ref: 'Users'
+    },
     liked_by: [{
         type: Schema.ObjectId,
         ref: 'Users'
