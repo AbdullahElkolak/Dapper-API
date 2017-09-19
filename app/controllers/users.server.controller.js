@@ -270,7 +270,7 @@ exports.login = function(req, res) {
             return res.send({message: getErrorMessage(err)});
         }
         else if(!user) {
-            return res.send({message: 'Username/Email not found!'});
+            return res.send({message: 'Incorrect username and password combination!'});
         }
         else if (user.authenticate(password)) {
             let token = generateJWT(user);
@@ -278,7 +278,7 @@ exports.login = function(req, res) {
                 success: true,
                 token: 'JWT ' + token
             });
-        } else return res.status(401).send({message: "Incorrect password! Please try again."});
+        } else return res.status(401).send({message: "Incorrect username and password combination!"});
     });
 };
 
