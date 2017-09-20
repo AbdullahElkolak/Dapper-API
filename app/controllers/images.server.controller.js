@@ -98,7 +98,10 @@ exports.upload = function(req, res) {
     
     image.image_url       =  'https://' + config.S3_BUCKET +'.s3.amazonaws.com/' + imgID;
     image.posted_by       =  req.user._id;
-    image.user            =  req.user;
+    image.user            =  {
+                                username : req.user.username,
+                                avatar   : req.user.avatar
+                             }
 
     busboy.on('finish', function() {
         image.save(function(err) {
