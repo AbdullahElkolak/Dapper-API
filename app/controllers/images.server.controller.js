@@ -76,9 +76,6 @@ exports.upload = function(req, res) {
         s3Params.ContentType  =  mimetype;
         s3Params.Body         =  file;
 
-        image.image_url       =  imgID;
-        image.posted_by       =  req.user._id;
-
         console.log("S3 Parameters: " + JSON.stringify(s3Params));
 
         s3.upload(s3Params, options, (err, data) => {
@@ -97,6 +94,10 @@ exports.upload = function(req, res) {
     busboy.on('field', function(fieldname, description) {
         image.description = description;
     });
+    
+    image.image_url       =  'https://${config.S3_BUCKET}.s3.amazonaws.com/' + imgID;
+    image.posted_by       =  req.user._id;
+    image.user            =  req.user;
 
     busboy.on('finish', function() {
         image.save(function(err) {
