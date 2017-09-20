@@ -66,12 +66,11 @@ exports.upload = function(req, res) {
 
     let user     =  req.user;
     let busboy   =  new Busboy({ headers: req.headers });
-    let imgID    = '';
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         let ext    =  path.extname(filename).toLowerCase();
 
-        imgID  = 'uploads/avatar/user_' + req.user._id + ext;
+        let imgID  = 'uploads/avatar/user_' + req.user._id + ext;
 
         let options = {partSize: 10 * 1024 * 1024, queueSize: 1};
 
@@ -92,10 +91,10 @@ exports.upload = function(req, res) {
                 url: `https://${config.S3_BUCKET}.s3.amazonaws.com/${imgID}`
             };
         });
+	    
+	user.avatar = 'https://' + config.S3_BUCKET + '.s3.amazonaws.com/' + imgID;
     });
-
-    user.avatar = 'https://' + config.S3_BUCKET + '.s3.amazonaws.com/' + imgID;
-
+	
     busboy.on('finish', function() {
         user.save(function(err) {
             if(err) {
