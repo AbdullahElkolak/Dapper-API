@@ -64,7 +64,7 @@ exports.upload = function(req, res) {
 
     let image    =  new Images();
     let busboy   =  new Busboy({ headers: req.headers });
-    let imgID    = '';
+    var imgID    = '';
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         let ext    =  path.extname(filename).toLowerCase();
