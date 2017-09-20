@@ -32,7 +32,8 @@ let UserSchema = new Schema({
         unique: true
     },
     avatar: {
-        type: String
+        type: String,
+        default: 'https://heatherchristenaschmidt.files.wordpress.com/2011/09/facebook_no_profile_pic2-jpg.gif'
     },
     bio: String,
     email: {
