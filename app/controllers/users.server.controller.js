@@ -77,7 +77,7 @@ exports.upload = function(req, res) {
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         let ext    =  path.extname(filename).toLowerCase();
 
-        let imgID  = 'uploads/avatar/user_' + req.user._id + '/' + createID() + ext;
+        let imgID  = 'uploads/avatar/user_' + req.user._id + ext;
 
         let options = {partSize: 10 * 1024 * 1024, queueSize: 1};
 
