@@ -44,13 +44,6 @@ let getErrorMessage = function(err) {
     return message;
 };
 
-function createID(possible, name) {
-    for(var i = 0; i < 12; i++) {
-        name += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return name;
-}
-
 function generateJWT(user) {
     let tokenExpiryDate = new Date();
     tokenExpiryDate.setDate(tokenExpiryDate.getDate() + 7);
@@ -71,13 +64,14 @@ exports.upload = function(req, res) {
         ACL: 'public-read'
     };
 
-    let image    =  new Images();
+    let user     =  req.user;
     let busboy   =  new Busboy({ headers: req.headers });
+    let imgID    = '';
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         let ext    =  path.extname(filename).toLowerCase();
 
-        let imgID  = 'uploads/avatar/user_' + req.user._id + ext;
+        imgID  = 'uploads/avatar/user_' + req.user._id + ext;
 
         let options = {partSize: 10 * 1024 * 1024, queueSize: 1};
 
@@ -100,15 +94,10 @@ exports.upload = function(req, res) {
         });
     });
 
-    busboy.on('field', function(fieldname, description) {
-        image.description = description;
-    });
-	
-    image.image_url       =  'https://${config.S3_BUCKET}.s3.amazonaws.com/' + imgID;
-    image.posted_by       =  req.user._id;
+    user.avatar = 'https://' + config.S3_BUCKET + '.s3.amazonaws.com/' + imgID;
 
     busboy.on('finish', function() {
-        image.save(function(err) {
+        user.save(function(err) {
             if(err) {
                 console.log(err);
                 return res.send({message: getErrorMessage(err)});
