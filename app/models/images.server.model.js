@@ -22,8 +22,8 @@ let ImageSchema = new Schema({
         trim: true
     },
     user: {
-        type: Schema.ObjectId,
-        ref: 'Users'
+        username: String,
+        avatar: String
     },
     location: String,
     posted_by: String,
