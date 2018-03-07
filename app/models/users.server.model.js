@@ -75,7 +75,7 @@ UserSchema.methods.authenticate = function(password) {
 };
 
 UserSchema.methods.hashPassword = function(password) {
-    return crypto.pbkdf2Sync(password, this.salt, 10000,64).toString('base64');
+    return crypto.pbkdf2Sync(password, this.salt, 10000, 64, 'sha512').toString('base64');
 };
 
 UserSchema.set('toJSON', {
