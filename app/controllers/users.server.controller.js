@@ -258,7 +258,7 @@ exports.login = function(req, res) {
             return res.send({message: getErrorMessage(err)});
         }
         else if(!user) {
-            return res.send({message: 'Incorrect username and password combination!'});
+            return res.send({message: "The username or email address you've entered doesn't match any account"});
         }
         else if (user.authenticate(password)) {
             let token = generateJWT(user);
