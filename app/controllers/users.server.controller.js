@@ -136,9 +136,9 @@ exports.create = function(req, res) {
 		        email: user.email,
 			avatar_url: user.avatar,
 			bio: user.bio
+			token: token
 		    },
-                    message: "Ok",
-                    token: 'JWT ' + token
+                    message: "Ok"
                 });
             }
         });
@@ -277,10 +277,10 @@ exports.login = function(req, res) {
 		        lastname: user.lastname,
 		        email: user.email,
 			avatar_url: user.avatar,
-			bio: user.bio
+			bio: user.bio,
+			token: token
 		},
-                success: true,
-                token: 'JWT ' + token
+                success: true
             });
         } else return res.status(401).send({message: "Incorrect username and password combination!"});
     });
