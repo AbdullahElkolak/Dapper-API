@@ -16,7 +16,6 @@ const bodyParser      =  require('body-parser');
 const methodOverride  =  require('method-override');
 const config          =  require('./env/development.js');
 const passport        =  require('passport');
-const cors            =  require('cors')
 
 module.exports = function() {
     let app = express();
@@ -29,7 +28,6 @@ module.exports = function() {
 
     app.use(bodyParser.json());
     app.use(methodOverride());
-    app.use(cors());
 
     require('./strategies/local-jwt.js')();
 
