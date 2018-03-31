@@ -35,7 +35,10 @@ let UserSchema = new Schema({
         type: String,
         default: 'https://heatherchristenaschmidt.files.wordpress.com/2011/09/facebook_no_profile_pic2-jpg.gif'
     },
-    bio: String,
+    bio: {
+        type: String,
+        default: 'Hey there! I am new to Dapper'
+    },
     email: {
         type: String,
         required: true,
