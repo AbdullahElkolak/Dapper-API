@@ -135,7 +135,7 @@ exports.create = function(req, res) {
 		        lastname: user.lastname,
 		        email: user.email,
 			avatar_url: user.avatar,
-			bio: user.bio
+			bio: user.bio,
 			token: token
 		    },
                     message: "Ok"
