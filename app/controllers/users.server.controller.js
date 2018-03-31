@@ -129,6 +129,14 @@ exports.create = function(req, res) {
 
                 let token = generateJWT(user);
                 return res.send({
+		    user: {
+		        username: user.username,
+		        firstname: user.firstname,
+		        lastname: user.lastname,
+		        email: user.email,
+			avatar_url: user.avatar,
+			bio: user.bio
+		    },
                     message: "Ok",
                     token: 'JWT ' + token
                 });
@@ -263,6 +271,14 @@ exports.login = function(req, res) {
         else if (user.authenticate(password)) {
             let token = generateJWT(user);
             return res.send({
+		user: {
+		        username: user.username,
+		        firstname: user.firstname,
+		        lastname: user.lastname,
+		        email: user.email,
+			avatar_url: user.avatar,
+			bio: user.bio
+		},
                 success: true,
                 token: 'JWT ' + token
             });
