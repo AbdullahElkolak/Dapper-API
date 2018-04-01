@@ -73,7 +73,7 @@ exports.listFollowers = function(req, res) {
 }
 
 exports.follow = function(req, res) {
-    Follow.findOneAndUpdate({follower: escape(req.user._id), following: escape(req.profile._id)}, {follower: escape(req.user._id), following: escape(req.profile._id)}, {upsert: true, new: true}, function(err, follows) {
+    Follow.findOneAndUpdate({follower: escape(req.user._id), following: escape(req.profile._id)}, {upsert: true, new: true}, function(err, follows) {
         if (err) {
             return res.json(err);
         } else return res.json(follows);
@@ -81,13 +81,11 @@ exports.follow = function(req, res) {
 };
 
 exports.unfollow = function(req, res) {
-    if(req.user && req.profile) {
-        Follow.find({follow_id: escape(req.user._id) + escape(req.profile._id)}).remove().exec(function(err) {
-            if(err) {
-                return res.status(400).send({
-                    message: getErrorMessage(err)
-                });
-            } else return res.send({success: true})
-        });
-    }
+    Follow.find({follower: escape(req.user._id), following: escape(req.profile._id)}).remove().exec(function(err) {
+        if(err) {
+            return res.status(400).send({
+                message: getErrorMessage(err)
+            });
+        } else return res.send({success: true})
+    });
 };
