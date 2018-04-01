@@ -130,6 +130,7 @@ exports.create = function(req, res) {
                 let token = generateJWT(user);
                 return res.send({
 		    user: {
+			id: user._id,
 		        username: user.username,
 		        firstname: user.firstname,
 		        lastname: user.lastname,
@@ -272,6 +273,7 @@ exports.login = function(req, res) {
             let token = generateJWT(user);
             return res.send({
 		user: {
+			id: user._id,
 		        username: user.username,
 		        firstname: user.firstname,
 		        lastname: user.lastname,
