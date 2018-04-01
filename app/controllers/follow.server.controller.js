@@ -81,7 +81,7 @@ exports.follow = function(req, res) {
 };
 
 exports.unfollow = function(req, res) {
-    Follow.find({follower: escape(req.user._id), following: escape(req.profile._id)}).remove().exec(function(err) {
+    Follow.remove({follower: escape(req.user._id), following: escape(req.profile._id)}, function(err) {
         if(err) {
             return res.status(400).send({
                 message: getErrorMessage(err)
