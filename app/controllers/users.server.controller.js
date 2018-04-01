@@ -164,8 +164,7 @@ exports.userByID = function(req, res, next, id) {
 };
 
 exports.list = function(req, res) {
-    User.find({}, '-salt -password -__v -provider').ne(req.user._id)
-	.exec(function(err, users) {
+    User.find({"_id": { "$ne": req.user._id }}, '-salt -password -__v -provider').exec(function(err, users) {
         if(err) {
             console.log(err);
             return res.status(400).send({
