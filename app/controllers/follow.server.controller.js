@@ -32,7 +32,9 @@ let getErrorMessage = function(err) {
 };
 
 exports.populateFollowers = function(req, res, next) {
-    Follow.find({$and: [{following: escape(req.profile._id)}, {follower: {$ne: escape(req.user._id)}}]}, function(err, follows) {
+    Follow.find({$and: [{following: escape(req.profile._id)}, {follower: {$ne: escape(req.user._id)}}]})
+        .populate('following')
+        .exec(function(err, follows) {
         // $and: [{following: escape(req.profile._id)}, {follower: {$ne: escape(req.user._id)}}]
         if(err) {
             return res.status(400).send({
@@ -47,7 +49,9 @@ exports.populateFollowers = function(req, res, next) {
 };
 
 exports.populateFollowing = function(req, res, next) {
-    Follow.find({$and: [{follower: escape(req.profile._id)}, {following: {$ne : escape(req.profile._id)}}]}, function(err, follows) {
+    Follow.find({$and: [{follower: escape(req.profile._id)}, {following: {$ne : escape(req.profile._id)}}]})
+        .populate('following')
+        .exec(function(err, follows) {
         if(err) {
             return res.status(400).send({
                 message: err
