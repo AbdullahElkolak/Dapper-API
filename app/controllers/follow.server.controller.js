@@ -64,6 +64,24 @@ exports.populateFollowing = function(req, res, next) {
     });
 };
 
+exports.followRecord = function(req, res, next, id) {
+    Follow.findOne({_id: id}, function(err, following) {
+        if(err) {
+            console.log(err);
+            return res.status(400).send({
+                message: getErrorMessage(err)
+            })
+        }
+        if(!following) {
+            return next(new Error('You are not following this user'));
+        }
+        else {
+            req.followRecord = following;
+        }
+        next();
+    });
+};
+
 exports.listFollowing = function(req, res) {
     return res.json(req.following);
 }
@@ -81,7 +99,8 @@ exports.follow = function(req, res) {
 };
 
 exports.unfollow = function(req, res) {
-    Follow.remove({follower: escape(req.user._id), following: escape(req.profile._id)}, function(err) {
+    let follow = req.followRecord;
+    follow.remove(function(err) {
         if(err) {
             return res.status(400).send({
                 message: getErrorMessage(err)
