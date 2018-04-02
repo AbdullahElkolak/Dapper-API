@@ -186,7 +186,7 @@ exports.read = function(req, res) {
 exports.delete = function(req, res) {
     let user = req.user;
 
-    User.remove(function(err) {
+    user.remove(function(err) {
         if(err) {
             console.log(err);
             return res.send({message: getErrorMessage(err)});
