@@ -32,9 +32,13 @@ let UserSchema = new Schema({
         unique: true
     },
     avatar: {
-        type: String
+        type: String,
+        default: 'https://heatherchristenaschmidt.files.wordpress.com/2011/09/facebook_no_profile_pic2-jpg.gif'
     },
-    bio: String,
+    bio: {
+        type: String,
+        default: 'Hey there! I am new to Dapper'
+    },
     email: {
         type: String,
         required: true,
@@ -74,7 +78,7 @@ UserSchema.methods.authenticate = function(password) {
 };
 
 UserSchema.methods.hashPassword = function(password) {
-    return crypto.pbkdf2Sync(password, this.salt, 10000,64).toString('base64');
+    return crypto.pbkdf2Sync(password, this.salt, 10000, 64, 'sha512').toString('base64');
 };
 
 UserSchema.set('toJSON', {

@@ -7,12 +7,6 @@
 'use strict'
 
 /**
-* Environment configuration
-*/
-
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-
-/**
 * Module dependencies
 */
 
@@ -25,5 +19,5 @@ const app          =   express();
 app.set('port', process.env.PORT || 3400);
 
 app.listen(app.get('port'), function() {
-    console.log('Server running on PORT: ' + app.get('port'));
+    console.log('Server running on PORT: ' + app.get('port') + ' at ' + Date(new Date()));
 });

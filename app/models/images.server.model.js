@@ -21,8 +21,13 @@ let ImageSchema = new Schema({
         type: String,
         trim: true
     },
+    user: {
+        username: String,
+        avatar: String
+    },
     location: String,
     posted_by: String,
+<<<<<<< HEAD
     comments: [{
         comment_id: Number,
         comment: String,
@@ -35,6 +40,8 @@ let ImageSchema = new Schema({
         type: Schema.ObjectId,
         ref: 'Users'
     },
+=======
+>>>>>>> development
     liked_by: [{
         type: Schema.ObjectId,
         ref: 'Users'

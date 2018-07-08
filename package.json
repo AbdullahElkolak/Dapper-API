@@ -1,6 +1,6 @@
 {
-  "name": "dapp3r",
-  "version": "2.0.0",
+  "name": "dapp3r-social-application-api",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/Kudzai3/Dapp3r-API.git"
@@ -8,8 +8,7 @@
   "description": "Photo Sharing Application API",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "Social",
@@ -19,6 +18,7 @@
   "author": "Kudzai Gopfa",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.95.0",
     "body-parser": "^1.17.2",
     "busboy": "^0.2.14",
     "crypto": "0.0.3",
@@ -30,6 +30,7 @@
     "mongoose": "^4.11.3",
     "morgan": "^1.8.2",
     "os": "^0.1.1",
+    "cors": "^2.8.4",
     "passport": "^0.3.2",
     "passport-jwt": "^2.2.1"
   }

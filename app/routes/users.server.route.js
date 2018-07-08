@@ -15,6 +15,11 @@ const follows        =   require('../controllers/follow.server.controller');
 const passport       =   require('passport');
 
 module.exports = function(app) {
+    // Authentication check path
+    app.get('/api', passport.authenticate('jwt', {session: false}), function(req, res) {
+        res.json({'message': 'authorized'});
+    });
+    
     app.post('/api/signup/authentication/email', users.email);
 
     app.post('/api/signup/authentication/username', users.username);

@@ -12,11 +12,24 @@
 
 const path       =  require('path');
 const fs         =  require('fs');
-const fse        =  require('fs-extra');
 const Busboy     =  require('busboy');
 const mongoose   =  require('mongoose');
+const aws        =  require('aws-sdk');
+const config     =  require('../../config/env/development.js');
+
+/**
+* Models
+*/
+
 const Images     =  mongoose.model('Images');
 const Follow     =  mongoose.model('Follow');
+
+/**
+* Environment variables
+*/
+
+const S3_BUCKET    = process.env.S3_BUCKET;
+aws.config         = config.AWS;
 
 let getErrorMessage = function(err) {
     if(err.errors) {
@@ -28,57 +41,82 @@ let getErrorMessage = function(err) {
         }
         return message;
     } else {
-        return "Unknown server error";
+        return "Oops! Something went wrong, please try again later.";
     }
 };
 
-function createID(possible, name) {
-    for(var i = 0; i < 12; i++) {
+function createID() {
+    let possible = 'abcdefghijklmnopqrstuvwyz', name = '';
+    for(var i = 0; i < 8; i++) {
         name += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return name;
 }
 
 exports.upload = function(req, res) {
-    let image = new Images(),
-        user  = req.user;
+    const s3       = new aws.S3();
 
-    let busboy = new Busboy({ headers: req.headers });
-    let ext = '', possiblename = '';
+    const s3Params = {
+        Bucket: config.S3_BUCKET,
+        Expires: 200,
+        ACL: 'public-read'
+    };
+
+    let image    =  new Images();
+    let busboy   =  new Busboy({ headers: req.headers });
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        ext = path.extname(filename).toLowerCase();
+        let ext    =  path.extname(filename).toLowerCase();
 
-        var possible = 'abcdefghijklmnopqrstuvwxyz0123456789',
-            imgID = createID(possible, possiblename) + ext;
+        let imgID  = 'uploads/content/user_' + req.user._id + '/' + createID() + ext;
+        
+        let options = {partSize: 10 * 1024 * 1024, queueSize: 1};
 
-        while(Images.checkImageID(imgID)) {
-            imgID = createID(possible, possiblename) + ext;
-        }
+        s3Params.Key          =  imgID;
+        s3Params.ContentType  =  mimetype;
+        s3Params.Body         =  file;
 
-        let save_dir =  __dirname + '/../../uploads/user_' + user._id;
+        console.log("S3 Parameters: " + JSON.stringify(s3Params));
 
-        fse.ensureDirSync(save_dir);
-
+<<<<<<< HEAD
         file.pipe(fs.createWriteStream(path.join(save_dir, imgID)));
         image.image_url =  imgID;
         image.posted_by =  user._id;
         image.user      =  user;
+=======
+        s3.upload(s3Params, options, (err, data) => {
+            if(err){
+                console.log(err);
+                return res.send({message: 'Oops! Something went wrong, Try Again.'});
+            }
+
+            const returnData = {
+                signedRequest: data,
+                url: `https://${config.S3_BUCKET}.s3.amazonaws.com/${imgID}`
+            };
+        });
+        
+        image.image_url = 'https://' + config.S3_BUCKET +'.s3.amazonaws.com/' + imgID;
+>>>>>>> development
     });
 
     busboy.on('field', function(fieldname, description) {
         image.description = description;
     });
+    
+    image.posted_by       =  req.user._id;
+    image.user            =  {
+                                username : req.user.username,
+                                avatar   : req.user.avatar
+                             }
 
     busboy.on('finish', function() {
-        console.log('Upload complete');
-
         image.save(function(err) {
             if(err) {
-                return res.send({message: err/*'Error occurred while uploading file'*/});
+                console.log(err);
+                return res.send({message: getErrorMessage(err)});
             } else res.json(image);
         });
-
     });
 
     return req.pipe(busboy);
@@ -87,6 +125,7 @@ exports.upload = function(req, res) {
 exports.imageByID = function(req, res, next, id) {
     Images.findOne({_id: id}).populate('author', 'username').exec(function(err, image) {
         if(err) {
+            console.log(err);
             return res.status(400).send({
                 message: getErrorMessage(err)
             })
@@ -107,7 +146,7 @@ exports.read = function(req, res) {
 
 exports.list = function(req, res) {
     Follow.aggregate([
-      {"$match": {follower: escape(req.user._id)}},
+      { "$match": {follower: escape(req.user._id)}},
       { "$lookup":{
           from: 'images',
           localField: 'following',
@@ -115,9 +154,10 @@ exports.list = function(req, res) {
           as: 'content'
       }}
     ]).exec(function(err, content) {
-        if(err)
-          return res.json(err);
-        else return res.json(content);
+        if(err) {
+            console.log(err);
+            return res.status(400).send({message: getErrorMessage(err)});
+        } else res.json(content);
     });
 };
 
@@ -137,6 +177,7 @@ exports.update = function(req, res) {
 
         image.save(function(err) {
             if(err) {
+                console.log(err);
                 return res.status(400).send({
                     message: getErrorMessage(err)
                 });
@@ -158,6 +199,7 @@ exports.delete = function(req, res) {
 
     image.remove(function(err) {
         if(err) {
+            console.log(err);
             return res.status(400).send({
                 message: getErrorMessage(err)
             });

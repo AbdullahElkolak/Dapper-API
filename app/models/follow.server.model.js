@@ -15,7 +15,10 @@ const Schema     =  mongoose.Schema;
 
 let FollowSchema = new Schema({
     follower: String,
-    following: String
+    following: {
+        type: Schema.ObjectId,
+        ref: 'Users'
+    }
 });
 
 mongoose.model('Follow', FollowSchema);

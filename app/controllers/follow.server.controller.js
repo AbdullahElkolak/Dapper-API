@@ -17,10 +17,10 @@ let getErrorMessage = function(err) {
         switch (err.code) {
             case 11000:
             case 11001:
-                message = 'Following already';
+                message = 'You are already following this user.';
                 break;
             default:
-                message = 'Something went wrong';
+                message = 'Oops! Something went wrong, please try again later.';
         }
     } else {
         for (var errName in err.errors) {
@@ -32,7 +32,9 @@ let getErrorMessage = function(err) {
 };
 
 exports.populateFollowers = function(req, res, next) {
-    Follow.find({$and: [{following: escape(req.profile._id)}, {follower: {$ne: escape(req.user._id)}}]}, function(err, follows) {
+    Follow.find({$and: [{following: escape(req.profile._id)}, {follower: {$ne: escape(req.user._id)}}]})
+        .populate('following', '-salt -password -__v -provider')
+        .exec(function(err, follows) {
         // $and: [{following: escape(req.profile._id)}, {follower: {$ne: escape(req.user._id)}}]
         if(err) {
             return res.status(400).send({
@@ -47,7 +49,9 @@ exports.populateFollowers = function(req, res, next) {
 };
 
 exports.populateFollowing = function(req, res, next) {
-    Follow.find({$and: [{follower: escape(req.profile._id)}, {following: {$ne : escape(req.profile._id)}}]}, function(err, follows) {
+    Follow.find({$and: [{follower: escape(req.profile._id)}, {following: {$ne : escape(req.profile._id)}}]})
+        .populate('following', '-salt -password -__v -provider')
+        .exec(function(err, follows) {
         if(err) {
             return res.status(400).send({
                 message: err
@@ -55,6 +59,24 @@ exports.populateFollowing = function(req, res, next) {
         }
         else {
             req.following = follows;
+        }
+        next();
+    });
+};
+
+exports.followRecord = function(req, res, next, id) {
+    Follow.findOne({_id: id}, function(err, following) {
+        if(err) {
+            console.log(err);
+            return res.status(400).send({
+                message: getErrorMessage(err)
+            })
+        }
+        if(!following) {
+            return next(new Error('You are not following this user'));
+        }
+        else {
+            req.followRecord = following;
         }
         next();
     });
@@ -69,7 +91,7 @@ exports.listFollowers = function(req, res) {
 }
 
 exports.follow = function(req, res) {
-    Follow.findOneAndUpdate({follower: escape(req.user._id), following: escape(req.profile._id)}, {follower: escape(req.user._id), following: escape(req.profile._id)}, {upsert: true, new: true}, function(err, follows) {
+    Follow.findOneAndUpdate({follower: escape(req.user._id), following: escape(req.profile._id)}, {upsert: true, new: true}, function(err, follows) {
         if (err) {
             return res.json(err);
         } else return res.json(follows);
@@ -77,13 +99,12 @@ exports.follow = function(req, res) {
 };
 
 exports.unfollow = function(req, res) {
-    if(req.user && req.profile) {
-        Follow.find({follow_id: escape(req.user._id) + escape(req.profile._id)}).remove().exec(function(err) {
-            if(err) {
-                return res.status(400).send({
-                    message: getErrorMessage(err)
-                });
-            } else return res.send({success: true})
-        });
-    }
+    let follow = req.followRecord;
+    follow.remove(function(err) {
+        if(err) {
+            return res.status(400).send({
+                message: getErrorMessage(err)
+            });
+        } else return res.send({success: true})
+    });
 };
