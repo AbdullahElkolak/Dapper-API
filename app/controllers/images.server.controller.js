@@ -78,12 +78,11 @@ exports.upload = function(req, res) {
 
         console.log("S3 Parameters: " + JSON.stringify(s3Params));
 
-<<<<<<< HEAD
         file.pipe(fs.createWriteStream(path.join(save_dir, imgID)));
         image.image_url =  imgID;
         image.posted_by =  user._id;
         image.user      =  user;
-=======
+
         s3.upload(s3Params, options, (err, data) => {
             if(err){
                 console.log(err);
@@ -97,7 +96,6 @@ exports.upload = function(req, res) {
         });
         
         image.image_url = 'https://' + config.S3_BUCKET +'.s3.amazonaws.com/' + imgID;
->>>>>>> development
     });
 
     busboy.on('field', function(fieldname, description) {
