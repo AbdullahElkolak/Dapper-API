@@ -21,6 +21,7 @@
     "aws-sdk": "^2.95.0",
     "body-parser": "^1.17.2",
     "busboy": "^0.2.14",
+    "cors": "^2.8.4",
     "crypto": "0.0.3",
     "express": "^4.15.3",
     "fs": "0.0.2",
@@ -29,8 +30,8 @@
     "method-override": "^2.3.9",
     "mongoose": "^4.11.3",
     "morgan": "^1.8.2",
+    "npm": "^6.4.1",
     "os": "^0.1.1",
-    "cors": "^2.8.4",
     "passport": "^0.3.2",
     "passport-jwt": "^2.2.1"
   }
