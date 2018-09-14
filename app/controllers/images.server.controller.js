@@ -56,12 +56,6 @@ function createID() {
 exports.upload = function(req, res) {
     const s3       = new aws.S3();
 
-    const s3Params = {
-        Bucket: config.S3_BUCKET,
-        Expires: 200,
-        ACL: 'public-read'
-    };
-
     let image    =  new Images();
     let busboy   =  new Busboy({ headers: req.headers });
 
@@ -69,14 +63,15 @@ exports.upload = function(req, res) {
         let ext    =  path.extname(filename).toLowerCase();
 
         let imgID  = 'uploads/content/user_' + req.user._id + '/' + createID() + ext;
-        
+
         let options = {partSize: 10 * 1024 * 1024, queueSize: 1};
 
-        s3Params.Key          =  imgID;
-        s3Params.ContentType  =  mimetype;
-        s3Params.Body         =  file;
-
-        console.log("S3 Parameters: " + JSON.stringify(s3Params));
+        const s3Params = {
+            'Bucket': config.S3_BUCKET,
+            'Key': imgID,
+            'ContentType': mimetype,
+            'Body': file
+        }
 
         s3.upload(s3Params, options, (err, data) => {
             if(err){
@@ -89,14 +84,14 @@ exports.upload = function(req, res) {
                 url: `https://${config.S3_BUCKET}.s3.amazonaws.com/${imgID}`
             };
         });
-        
+
         image.image_url = 'https://' + config.S3_BUCKET +'.s3.amazonaws.com/' + imgID;
     });
 
     busboy.on('field', function(fieldname, description) {
         image.description = description;
     });
-    
+
     image.posted_by       =  req.user._id;
     image.user            =  {
                                 username : req.user.username,
