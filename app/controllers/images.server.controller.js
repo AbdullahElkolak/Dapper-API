@@ -57,7 +57,7 @@ exports.upload = function(req, res) {
 
 
     let image    =  new Images();
-    let busboy   =  new Busboy({ headers: req.headers });
+    let busboy   =  new Busboy({headers: req.headers});
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         let ext    =  path.extname(filename).toLowerCase();
@@ -71,6 +71,8 @@ exports.upload = function(req, res) {
             'Content-Type': mimetype,
             'Body': file
         }
+
+        console.log("Content: " + s3Params);
 
         let s3 = new aws.S3();
 
