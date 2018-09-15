@@ -54,17 +54,16 @@ function createID() {
 }
 
 exports.upload = function(req, res) {
-    const s3       = new aws.S3();
+
 
     let image    =  new Images();
     let busboy   =  new Busboy({ headers: req.headers });
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         let ext    =  path.extname(filename).toLowerCase();
-
         let imgID  = 'uploads/content/user_' + req.user._id + '/' + createID() + ext;
 
-        let options = {partSize: 10 * 1024 * 1024, queueSize: 1};
+        const s3Options = {partSize: 10 * 1024 * 1024, queueSize: 1};
 
         const s3Params = {
             'Bucket': config.S3_BUCKET,
@@ -73,7 +72,9 @@ exports.upload = function(req, res) {
             'Body': file
         }
 
-        s3.upload(s3Params, options, (err, data) => {
+        let s3 = new aws.S3();
+
+        s3.upload(s3Params, s3Options, (err, data) => {
             if(err){
                 console.log(err);
                 return res.send({message: 'Oops! Something went wrong, Try Again.'});
