@@ -68,7 +68,7 @@ exports.upload = function(req, res) {
         const s3Params = {
             'Bucket': config.S3_BUCKET,
             'Key': imgID,
-            'ContentType': mimetype,
+            'Content-Type': mimetype,
             'Body': file
         }
 
