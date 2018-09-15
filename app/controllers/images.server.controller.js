@@ -57,7 +57,7 @@ exports.upload = function(req, res) {
     let image    =  new Images();
     let busboy   =  new Busboy({headers: req.headers});
 
-    console.log("Headers: " + req.headers);
+    console.log("Headers: " + JSON.stringify(req.headers));
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         let ext    =  path.extname(filename).toLowerCase();
