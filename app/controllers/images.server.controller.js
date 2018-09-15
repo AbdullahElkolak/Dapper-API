@@ -66,10 +66,9 @@ exports.upload = function(req, res) {
         const s3Options = {partSize: 10 * 1024 * 1024, queueSize: 1};
 
         const s3Params = {
-            'Bucket': config.S3_BUCKET,
-            'Key': imgID,
-            'Content-Type': mimetype,
-            'Body': file
+            Bucket: config.S3_BUCKET,
+            Key: imgID,
+            Body: file
         }
 
         console.log("Content: " + s3Params);
