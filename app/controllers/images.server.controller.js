@@ -92,7 +92,7 @@ exports.upload = function(req, res) {
         image.description = description;
     });
 
-    image.posted_by       =  req.user._id;
+    image.posted_by       =  req.user;
     image.user            =  {
                                 username : req.user.username,
                                 avatar   : req.user.avatar
