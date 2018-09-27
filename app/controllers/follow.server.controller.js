@@ -93,10 +93,15 @@ exports.listFollowers = function(req, res) {
 }
 
 exports.follow = function(req, res) {
-    Follow.findOneAndUpdate({follower: escape(req.user._id), following: escape(req.profile._id)}, {upsert: true, new: true}, function(err, follows) {
+    let follow = new Follow({follower: escape(req.user._id), following: escape(req.profile._id)});
+    
+    follow.save(function(err, follows) {
         if (err) {
             return res.json(err);
-        } else return res.json(follows);
+        } else {
+            console.log("User follow success: " + JSON.stringify(follows));
+            return res.json(follows);
+        }
     });
 };
 
