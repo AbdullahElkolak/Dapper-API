@@ -136,7 +136,7 @@ exports.list = function(req, res) {
     Follow.aggregate([
       { "$match": {follower: escape(req.user._id)}},
       { "$lookup":{
-          from: 'images',
+          from: 'Images',
           localField: 'following',
           foreignField: 'posted_by',
           as: 'content'
