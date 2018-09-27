@@ -120,11 +120,13 @@ exports.create = function(req, res) {
             } else {
                 let follow = new Follow({follower: user._id, following: user._id});
 
-                follow.save(function(err) {
+                follow.save(function(err, follow_data) {
                     if(err) {
                         console.log(err);
                         res.status(400).send({message: getErrorMessage(err)})
-                    }
+                    } else {
+			console.log("User follow success: " + JSON.stringify(follow_data));
+		    }
                 });
 
                 let token = generateJWT(user);
