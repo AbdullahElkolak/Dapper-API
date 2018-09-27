@@ -42,6 +42,7 @@ exports.populateFollowers = function(req, res, next) {
             });
         }
         else {
+            console.log("Followers: " + follows);
             req.followers = follows;
         }
         next();
@@ -58,6 +59,7 @@ exports.populateFollowing = function(req, res, next) {
             });
         }
         else {
+            console.log("Following: " + follows);
             req.following = follows;
         }
         next();
