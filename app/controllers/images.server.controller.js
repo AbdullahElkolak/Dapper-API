@@ -130,7 +130,7 @@ exports.read = function(req, res) {
 
 exports.list = function(req, res) {
     Follow.aggregate([
-      { "$match": {follower: req.user}},
+      { "$match": {follower: req.user._id}},
       { "$lookup":{
           from: 'Images',
           localField: 'following',
