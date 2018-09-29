@@ -118,7 +118,7 @@ exports.create = function(req, res) {
                 console.log(err);
                 return res.status(400).send({message: getErrorMessage(err)});
             } else {
-                let follow = new Follow({follower: user._id, following: user._id});
+                let follow = new Follow({follower: user, following: user});
 
                 follow.save(function(err, follow_data) {
                     if(err) {
