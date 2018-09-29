@@ -92,11 +92,7 @@ exports.upload = function(req, res) {
         image.description = description;
     });
 
-    image.posted_by       =  req.user;
-    image.user            =  {
-                                username : req.user.username,
-                                avatar   : req.user.avatar
-                             }
+    image.posted_by = req.user;
 
     busboy.on('finish', function() {
         image.save(function(err) {
@@ -134,7 +130,7 @@ exports.read = function(req, res) {
 
 exports.list = function(req, res) {
     Follow.aggregate([
-      { "$match": {follower: escape(req.user._id)}},
+      { "$match": {follower: escape(req.user)}},
       { "$lookup":{
           from: 'Images',
           localField: 'following',
