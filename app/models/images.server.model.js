@@ -21,10 +21,6 @@ let ImageSchema = new Schema({
         type: String,
         trim: true
     },
-    user: {
-        username: String,
-        avatar: String
-    },
     location: String,
     posted_by: {
         type: Schema.ObjectId,
