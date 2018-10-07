@@ -93,6 +93,11 @@ exports.upload = function(req, res) {
     });
 
     image.posted_by = req.user;
+    
+    image.user = {
+                    username: req.user.username,
+                    avatar: req.user.avatar
+                 }
 
     busboy.on('finish', function() {
         image.save(function(err) {
