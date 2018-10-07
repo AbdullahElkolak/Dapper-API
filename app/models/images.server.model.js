@@ -26,6 +26,10 @@ let ImageSchema = new Schema({
         type: Schema.ObjectId,
         ref: 'Users'
     },
+    user: {
+        username: String,
+        avatar: String
+    },
     liked_by: [{
         type: Schema.ObjectId,
         ref: 'Users'
