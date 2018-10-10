@@ -179,7 +179,7 @@ exports.list = function(req, res) {
 };
 
 exports.read = function(req, res) {
-    Images.find({"posted_by": req.profile._id}, (err, images) => {
+    Images.find({"posted_by": req.profile}, (err, images) => {
 	if (err) {
 	    console.log(err);
 	    res.send({message: getErrorMessage(err)});
