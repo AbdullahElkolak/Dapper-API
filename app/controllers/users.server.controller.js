@@ -23,6 +23,7 @@ const jwt        =  require('jsonwebtoken');
 
 const User       =  mongoose.model('Users');
 const Follow     =  mongoose.model('Follow');
+const Images     =  mongoose.model('Images');
 
 let getErrorMessage = function(err) {
     var message = '';
@@ -178,11 +179,18 @@ exports.list = function(req, res) {
 };
 
 exports.read = function(req, res) {
-    res.json({
-        profile   : req.profile,
-        followers : req.followers.length,
-        following : req.following.length
-    });
+    Images.find({"posted_by": req.profile._id}, (err, images) => {
+	if (err) {
+	    console.log(err);
+	    res.send({message: getErrorMessage(err)});
+	}
+        res.json({
+            profile   : req.profile,
+            followers : req.followers.length,
+            following : req.following.length,
+	    images    : images
+        });
+    }));
 };
 
 exports.delete = function(req, res) {
