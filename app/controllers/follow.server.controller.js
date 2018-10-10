@@ -32,7 +32,7 @@ let getErrorMessage = function(err) {
 };
 
 exports.populateFollowers = function(req, res, next) {
-    Follow.find({following: escape(req.profile)})
+    Follow.find({following: req.profile})
         .populate('following', '-salt -password -__v -provider')
         .exec(function(err, follows) {
         // $and: [{following: escape(req.profile._id)}, {follower: {$ne: escape(req.user._id)}}]
@@ -50,7 +50,7 @@ exports.populateFollowers = function(req, res, next) {
 };
 
 exports.populateFollowing = function(req, res, next) {
-    Follow.find({follower: escape(req.profile)})
+    Follow.find({follower: req.profile})
         .populate('following', '-salt -password -__v -provider')
         .exec(function(err, follows) {
         if(err) {
