@@ -190,7 +190,7 @@ exports.read = function(req, res) {
             following : req.following.length,
 	    images    : images
         });
-    }));
+    });
 };
 
 exports.delete = function(req, res) {
